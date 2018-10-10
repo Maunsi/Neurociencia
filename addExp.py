@@ -3,31 +3,69 @@ import psychopy
 from psychopy import visual, core, event
 import random
 
+def bienvenida(win):
+    bienvenida = visual.TextStim(win=win, text='AAAAAAAREEEE YOUUUUU REAAADYYYYY?')
+    tres = visual.TextStim(win=win, text='3')
+    dos = visual.TextStim(win=win, text='2')
+    uno = visual.TextStim(win=win, text='1')
+    
+    bienvenida.draw()
+    win.flip()
+    core.wait(0.5)
+
+    tres.draw()
+    win.flip()
+    core.wait(0.5)
+
+    dos.draw()
+    win.flip()
+    core.wait(0.5)
+
+    uno.draw()
+    win.flip()
+    core.wait(0.5)
+    
 #crear una ventana
 win=visual.Window(fullscr=True)
 
-listStimuli = []
-for i in range(5):
-    left = random.randint(1,5)
-    right = random.randint(1,5)
-    s = str(left) + "             " + str(right)
-    text = visual.TextStim(win=win, name='text', text=s, font=u'Arial', pos=(0, 0), 
-    height=0.1, wrapWidth=None, ori=0, color=u'white', colorSpace='rgb', opacity=1,depth=0.0);
-    listStimuli.append(text)
+
+listPairs = []
+
+#Estamos asumiendo que el primer par corresponde al primer res, etc etc. Rechequear eso
+pairFile = open("pairInputs.txt", "r")
+for line in pairFile:
+    left, right = line.split(",")
+    textLeft = visual.TextStim(win=win, name='textLeft', text=left, units='norm', pos=(-0.5, 0))
+    
+    textRight = visual.TextStim(win=win, name='textRight', text=right, units= 'norm', pos=(0.5, 0))
+    
+    listPairs.append(textLeft)
+    listPairs.append(textRight)
+pairFile.close()
 
 
-#crear un estimulo visual (numero)
-
-#img = visual.Circle(win=win,units="pix",radius=150,fillColor=[-1, -1, -1],lineColor=[-1, -1, -1],edges=128)
-
+resFile = open("resInputs.txt", "r")
+listRes = []
+for line in resFile:
+    text = visual.TextStim(win=win, name='res', text=line)
+    
+    listRes.append(text)
+resFile.close()
 #crear el objeto clock que sirve para controlar el tiempo (clock cuenta en segundos)
 clock = core.Clock()
 
+bienvenida(win)
+
 event.clearEvents()
-while clock.getTime() < 5.0:  # correr el script hasta que el clock marque los 5 segundos 
-    listStimuli.pop(0).draw()
+while len(listPairs) != 0:  #corro mientras queden estimulos    
+    1#Mostrar pares
+    listPairs.pop(0).draw()
+    listPairs.pop(0).draw()
     win.flip()
     core.wait(0.5)
+    
+    #Mostrar resultado
+    listRes.pop(0).draw()
     win.flip() 
     core.wait(0.5)
 
