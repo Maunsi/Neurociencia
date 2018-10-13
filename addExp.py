@@ -25,6 +25,9 @@ def bienvenida(win):
     win.flip()
     core.wait(0.5)
 
+
+#crear una ventana
+win=visual.Window(fullscr=True)
 # mascara
 mascara = visual.TextStim(win=win, name='mascara', text='MWMWMWMWMWM', units='norm', pos=(0, 0))
 
@@ -48,9 +51,6 @@ def crearTextos():
         textList.append(((textLeft, textRight), textRes))
     inputFile.close()
     return textList
-
-#crear una ventana
-win=visual.Window(fullscr=True)
 
 
 textList = crearTextos()
