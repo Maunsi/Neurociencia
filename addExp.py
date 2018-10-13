@@ -61,7 +61,6 @@ clock = core.Clock()
 bienvenida(win)
 
 event.clearEvents()
-<<<<<<< HEAD
 while len(textList) != 0:  #corro mientras queden estimulos    
     
     # mostrar mascara
