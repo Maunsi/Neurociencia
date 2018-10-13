@@ -24,58 +24,54 @@ def bienvenida(win):
     uno.draw()
     win.flip()
     core.wait(0.5)
-    
+
+
+def crearTextos():
+    textList = []
+    inputFile = open("pairAndResInputs.txt", "r")
+    for line in inputFile:
+        pairString, resString = line.split(" ")
+        leftString, rightString = pairString.split
+        textLeft = visual.TextStim(win=win, name='textLeft', text=left, units='norm', pos=(-0.5, 0))
+        textRight = visual.TextStim(win=win, name='textRight', text=right, units= 'norm', pos=(0.5, 0))
+        textRes =  visual.TextStim(win=win, name='textRes', text=res)
+        textList.append(((textLeft, textRight), textRes))
+    inputFile.close()
+    return textList
+
+
+
+
+
 #crear una ventana
 win=visual.Window(fullscr=True)
 
 
-listPairs = []
+textList = crearTextos()
 
-#Estamos asumiendo que el primer par corresponde al primer res, etc etc. Rechequear eso
-pairFile = open("pairInputs.txt", "r")
-for line in pairFile:
-    left, right = line.split(",")
-    textLeft = visual.TextStim(win=win, name='textLeft', text=left, units='norm', pos=(-0.5, 0))
-    
-    textRight = visual.TextStim(win=win, name='textRight', text=right, units= 'norm', pos=(0.5, 0))
-    
-    listPairs.append(textLeft)
-    listPairs.append(textRight)
-pairFile.close()
-
-
-resFile = open("resInputs.txt", "r")
-listRes = []
-for line in resFile:
-    text = visual.TextStim(win=win, name='res', text=line)
-    
-    listRes.append(text)
-resFile.close()
 #crear el objeto clock que sirve para controlar el tiempo (clock cuenta en segundos)
 clock = core.Clock()
 
 bienvenida(win)
 
 event.clearEvents()
-while len(listPairs) != 0:  #corro mientras queden estimulos    
-    1#Mostrar pares
-    listPairs.pop(0).draw()
-    listPairs.pop(0).draw()
+while len(textList) != 0:  #corro mientras queden estimulos    
+    #Mostrar pares
+    ((textLeft, textRight), textRes) = textList.pop(0)
+    textLeft.draw()
+    textRight.draw()
     win.flip()
     core.wait(0.5)
     
     #Mostrar resultado
-    listRes.pop(0).draw()
+    textRes.draw()
     win.flip() 
     core.wait(0.5)
 
-list = event.getKeys(keyList=["space"], timeStamped=True)
+pressedKeys = event.getKeys(keyList=["space"], timeStamped=True)
 
-#file = open("ej1.txt","a")
-#file.write(list)
-#file.close()
-with open('ej2.txt', 'a') as f:
-    for item in list:
+
+with open("pressedKeys", "w") as f:
+    for item in pressedKeys:
         f.write("%s\n" % str(item))
-
-print(list)
+f.close()
