@@ -9,23 +9,35 @@ def bienvenida(win):
     dos = visual.TextStim(win=win, text='2')
     uno = visual.TextStim(win=win, text='1')
     
-    bienvenida.draw()
-    win.flip()
-    core.wait(0.5)
+    draw(win, {bienvenida}, 1)
 
-    tres.draw()
-    win.flip()
-    core.wait(0.5)
+    draw(win, {tres}, 1)
 
-    dos.draw()
-    win.flip()
-    core.wait(0.5)
+    draw(win, {dos}, 1)
 
-    uno.draw()
-    win.flip()
-    core.wait(0.5)
+    draw(win, {uno}, 1)
 
 
+def draw(win, stimuli, time):
+	for stimulus in stimuli:
+		stimulus.draw()
+	win.flip()
+	core.wait(time)
+
+def crearTextos():
+    textList = []
+    inputFile = open("pairAndResInputs.txt", "r")
+    for line in inputFile:
+        pairString, resString = line.split(" ")
+        leftString, rightString = pairString.split(",")
+        textLeft = visual.TextStim(win=win, name='textLeft', text=leftString, units='norm', pos=(-0.5, 0))
+        textRight = visual.TextStim(win=win, name='textRight', text=rightString, units= 'norm', pos=(0.5, 0))
+        textRes =  visual.TextStim(win=win, name='textRes', text=resString, units= 'norm', pos=(0, 0))
+        textList.append(((textLeft, textRight), textRes))
+    inputFile.close()
+    return textList
+
+################################################################################################################
 #crear una ventana
 win=visual.Window(fullscr=True)
 # mascara
@@ -39,19 +51,6 @@ primerRepresentar = visual.TextStim(win=win, name='REPRESENTAR', units='norm', p
 mascaraFlankerLeft = visual.TextStim(win=win, name='mascaraFlankerLeft', text='##', units='norm', pos=(-0.5, 0))
 mascaraFlankerRight = visual.TextStim(win=win, name='mascaraFlankerRight', text='##', units='norm', pos=(0.5, 0))
 
-def crearTextos():
-    textList = []
-    inputFile = open("pairAndResInputs.txt", "r")
-    for line in inputFile:
-        pairString, resString = line.split(" ")
-        leftString, rightString = pairString.split
-        textLeft = visual.TextStim(win=win, name='textLeft', text=left, units='norm', pos=(-0.5, 0))
-        textRight = visual.TextStim(win=win, name='textRight', text=right, units= 'norm', pos=(0.5, 0))
-        textRes =  visual.TextStim(win=win, name='textRes', text=res)
-        textList.append(((textLeft, textRight), textRes))
-    inputFile.close()
-    return textList
-
 
 textList = crearTextos()
 
@@ -61,47 +60,29 @@ clock = core.Clock()
 bienvenida(win)
 
 event.clearEvents()
-while len(textList) != 0:  #corro mientras queden estimulos    
-    
-    # mostrar mascara
-    mascara.draw()
-    win.flip()
-    core.wait(1)
+while len(textList) != 0:  #corro mientras queden estimulos
+
+    # mostrar mascara    
+    draw(win, {mascara}, 1)
     
     # mostrar primer. Por ahora solo muestra 'sumar'.
-    primerSumar.draw()
-    win.flip()
-    core.wait(1)
+    draw(win, {primerSumar}, 1)
     
     # mostrar mascara
-    mascara.draw()
-    win.flip()
-    core.wait(1)
+    draw(win, {mascara}, 1)
     
     # mostrar mascara para los flankers
-    mascaraFlankerLeft.draw()
-    mascaraFlankerRight.draw()
-    win.flip()
-    core.wait(1)
-    
+    draw(win, {mascaraFlankerLeft, mascaraFlankerRight}, 1)
     
     #Mostrar pares
     ((textLeft, textRight), textRes) = textList.pop(0)
-    textLeft.draw()
-    textRight.draw()
-    win.flip()
-    core.wait(0.5)
+    draw(win, {textLeft, textRight}, 1)
     
     # mostrar mascara para los flankers
-    mascaraFlankerLeft.draw()
-    mascaraFlankerRight.draw()
-    core.wait(1)
-    win.flip()
+    draw(win, {mascaraFlankerLeft, mascaraFlankerRight}, 1)
     
     #Mostrar resultado
-    textRes.draw()
-    win.flip() 
-    core.wait(0.5)
+    draw(win, {textRes}, 1)
     
 
 pressedKeys = event.getKeys(keyList=["space"], timeStamped=True)
