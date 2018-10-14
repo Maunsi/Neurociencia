@@ -1,4 +1,4 @@
-import random, sys
+import random, sys, string
 
 
 #genero los pares, los guardo en un diccionario y luego randomizo las keys para poder escribirlo ya "desordenado"
@@ -12,12 +12,14 @@ else:
 		left = random.randint(1,5)
 		right = random.randint(1,5)
 		res = 0
-		if(i < n//2):
+		if(i < n//4):
 			res = left + right
-		else:
+		elif( i >= n//4 and i < n//2):
 			res = random.randint(1,5)
 			while ((res == (left + right)) or (res == left) or (res == right)):
 				res = random.randint(1,5)
+		else:
+			res = random.choice(string.ascii_uppercase)
 		inputList.append(((left, right), res))
 
 	print(inputList)

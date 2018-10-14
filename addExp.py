@@ -52,14 +52,16 @@ mascaraFlankerLeft = visual.TextStim(win=win, name='mascaraFlankerLeft', text='#
 mascaraFlankerRight = visual.TextStim(win=win, name='mascaraFlankerRight', text='##', units='norm', pos=(0.5, 0))
 
 
-textList = crearTextos()
+textList= crearTextos()
 
 #crear el objeto clock que sirve para controlar el tiempo (clock cuenta en segundos)
 clock = core.Clock()
 
 bienvenida(win)
 
+#idea para obtener teclas: hago clear antes de res, y hago getKeys despues de res
 event.clearEvents()
+pressedKeys = []
 while len(textList) != 0:  #corro mientras queden estimulos
 
     # mostrar mascara    
@@ -83,9 +85,7 @@ while len(textList) != 0:  #corro mientras queden estimulos
     
     #Mostrar resultado
     draw(win, {textRes}, 1)
-    
-
-pressedKeys = event.getKeys(keyList=["space"], timeStamped=True)
+    pressedKeys.append(event.getKeys(keyList=["left", "right"], timeStamped=True))
 
 with open("pressedKeys", "w") as f:
     for item in pressedKeys:
