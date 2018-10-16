@@ -1,6 +1,4 @@
 from psychopy import visual, core, event #import some libraries from PsychoPy
-import psychopy
-from psychopy import visual, core, event
 import random
 
 def bienvenida(win):
@@ -40,6 +38,10 @@ def crearTextos():
 ################################################################################################################
 #crear una ventana
 win=visual.Window(fullscr=True)
+
+# centro(fixation point en el paper)
+centro = visual.TextStim(win=win, name='centro', text='| |', units='norm', pos=(0,0))
+
 # mascara
 mascara = visual.TextStim(win=win, name='mascara', text='MWMWMWMWMWM', units='norm', pos=(0, 0))
 
@@ -64,6 +66,9 @@ event.clearEvents()
 pressedKeys = []
 while len(textList) != 0:  #corro mientras queden estimulos
 
+    # mostrar el centro
+    draw(win, {centro}, 1)
+    
     # mostrar mascara    
     draw(win, {mascara}, 1)
     
@@ -73,19 +78,23 @@ while len(textList) != 0:  #corro mientras queden estimulos
     # mostrar mascara
     draw(win, {mascara}, 1)
     
-    # mostrar mascara para los flankers
-    draw(win, {mascaraFlankerLeft, mascaraFlankerRight}, 1)
+    # mostrar mascara para los flankers junto con el centro
+    draw(win, {centro, mascaraFlankerLeft, mascaraFlankerRight}, 1)
     
-    #Mostrar pares
+    #Mostrar pares y el centro
     ((textLeft, textRight), textRes) = textList.pop(0)
-    draw(win, {textLeft, textRight}, 1)
+    draw(win, {centro, textLeft, textRight}, 1)
     
-    # mostrar mascara para los flankers
-    draw(win, {mascaraFlankerLeft, mascaraFlankerRight}, 1)
+    # mostrar mascara para los flankers y el centro
+    draw(win, {centro, mascaraFlankerLeft, mascaraFlankerRight}, 1)
     
-    #Mostrar resultado
-    draw(win, {textRes}, 1)
-    pressedKeys.append(event.getKeys(keyList=["left", "right"], timeStamped=True))
+    #Mostrar resultado y mascaras para los flankers
+    draw(win, {textRes, mascaraFlankerLeft, mascaraFlankerRight}, 1)
+    
+    # prueba: igual que getKeys pero espera el tiempo indicado por maxWait, tal vez sirve para 
+    # cortar la prueba en caso de demora o respuesta correcta.
+    pressedKeys.append(event.waitKeys(maxWait=1, keyList=["left", "right"], timeStamped=True))
+    #pressedKeys.append(event.getKeys(keyList=["left", "right"], timeStamped=True))
 
 with open("pressedKeys", "w") as f:
     for item in pressedKeys:
