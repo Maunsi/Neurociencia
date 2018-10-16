@@ -26,12 +26,14 @@ def crearTextos():
     textList = []
     inputFile = open("pairAndResInputs.txt", "r")
     for line in inputFile:
-        pairString, resString = line.split(" ")
+        # rstrip() para evitar que algun \n moleste
+        pairString, resString, primerString = line.rstrip().split(" ")
         leftString, rightString = pairString.split(",")
         textLeft = visual.TextStim(win=win, name='textLeft', text=leftString, units='norm', pos=(-0.5, 0))
         textRight = visual.TextStim(win=win, name='textRight', text=rightString, units= 'norm', pos=(0.5, 0))
         textRes =  visual.TextStim(win=win, name='textRes', text=resString, units= 'norm', pos=(0, 0))
-        textList.append(((textLeft, textRight), textRes))
+        textPrimer = visual.TextStim(win=win, name='textPrimer', text=primerString, units='norm', pos=(0, 0))
+        textList.append(((textLeft, textRight), textRes, textPrimer))
     inputFile.close()
     return textList
 
@@ -46,13 +48,12 @@ centro = visual.TextStim(win=win, name='centro', text='| |', units='norm', pos=(
 mascara = visual.TextStim(win=win, name='mascara', text='MWMWMWMWMWM', units='norm', pos=(0, 0))
 
 # primers
-primerSumar = visual.TextStim(win=win, name='sumar', text='SUMAR', units='norm', pos=(0, 0))
-primerRepresentar = visual.TextStim(win=win, name='REPRESENTAR', units='norm', pos=(0, 0))
+#primerSumar = visual.TextStim(win=win, name='sumar', text='SUMAR', units='norm', pos=(0, 0))
+#primerRepresentar = visual.TextStim(win=win, name='REPRESENTAR', units='norm', pos=(0, 0))
 
 # mascaras para los flankers
 mascaraFlankerLeft = visual.TextStim(win=win, name='mascaraFlankerLeft', text='##', units='norm', pos=(-0.5, 0))
 mascaraFlankerRight = visual.TextStim(win=win, name='mascaraFlankerRight', text='##', units='norm', pos=(0.5, 0))
-
 
 textList= crearTextos()
 
@@ -65,15 +66,18 @@ bienvenida(win)
 event.clearEvents()
 pressedKeys = []
 while len(textList) != 0:  #corro mientras queden estimulos
-
+    
+    # prepara target, flankers y primers
+    ((textLeft, textRight), textRes, textPrimer) = textList.pop(0)
+    
     # mostrar el centro
     draw(win, {centro}, 1)
     
     # mostrar mascara    
     draw(win, {mascara}, 1)
     
-    # mostrar primer. Por ahora solo muestra 'sumar'.
-    draw(win, {primerSumar}, 1)
+    # mostrar primer de acuerdo a lo especificado en pairAndResInputs.txt
+    draw(win, {textPrimer}, 1)
     
     # mostrar mascara
     draw(win, {mascara}, 1)
@@ -82,7 +86,6 @@ while len(textList) != 0:  #corro mientras queden estimulos
     draw(win, {centro, mascaraFlankerLeft, mascaraFlankerRight}, 1)
     
     #Mostrar pares y el centro
-    ((textLeft, textRight), textRes) = textList.pop(0)
     draw(win, {centro, textLeft, textRight}, 1)
     
     # mostrar mascara para los flankers y el centro
