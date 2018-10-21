@@ -1,4 +1,4 @@
-from psychopy import visual, core, event #import some libraries from PsychoPy
+from psychopy import visual, core, event, gui
 import random
 
 def bienvenida(win):
@@ -52,9 +52,14 @@ def generate_mask_texts():
 	return centro, mascara, mascara_flanker_left, mascara_flanker_right
 
 ################################################################################################################
+<<<<<<< HEAD
 def main():
 	#crear una ventana
 	win=visual.Window(fullscr=True)
+
+	# caja de dialogo
+	cajaDialogo = gui.Dlg()
+	cajaDialogo.addField("ID: ")
 
 	centro, mascara, mascara_flanker_left, mascara_flanker_right = generate_mask_texts()    
 
@@ -62,6 +67,9 @@ def main():
 	clock = core.Clock()
 
 	bienvenida(win)
+
+	# muestra caja de dialogo. Respuestas en gui.data[i]
+	cajaDialogo.show()
 
 	#idea para obtener teclas: hago clear antes de res, y hago getKeys despues de res
 	event.clearEvents()
@@ -72,6 +80,7 @@ def main():
 	n = len(input_list)
 	trial_by_id = {}
 	trial_responses_by_id = {}
+
 	while len(input_list) != 0:  #corro mientras queden estimulos
 		trial_id, prime, left, right, res = input_list.pop(0)
 		# prepara target, flankers y primers
