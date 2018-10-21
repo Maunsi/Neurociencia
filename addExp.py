@@ -1,4 +1,4 @@
-from psychopy import visual, core, event #import some libraries from PsychoPy
+from psychopy import visual, core, event, gui
 import random
 
 def bienvenida(win):
@@ -41,8 +41,13 @@ def generate_texts(prime, left, right, res):
 	return textPrime, textLeft, textRight, textRes
 
 ################################################################################################################
+
 #crear una ventana
 win=visual.Window(fullscr=True)
+
+# caja de dialogo
+cajaDialogo = gui.Dlg()
+cajaDialogo.addField("ID: ")
 
 # centro(fixation point en el paper)
 centro = visual.TextStim(win=win, name='centro', text='| |', units='norm', pos=(0,0))
@@ -58,6 +63,9 @@ mascaraFlankerRight = visual.TextStim(win=win, name='mascaraFlankerRight', text=
 clock = core.Clock()
 
 bienvenida(win)
+
+# muestra caja de dialogo. Respuestas en gui.data[i]
+cajaDialogo.show()
 
 #idea para obtener teclas: hago clear antes de res, y hago getKeys despues de res
 event.clearEvents()
@@ -109,5 +117,5 @@ with open("results.txt", "w") as f:
 	for i in range(n):
 		(prime, left, right, res) = trial_by_id[i]
 		response = trial_responses_by_id[i]
-		f.write("%s\n" % str(i) + " " + prime + " " + left + " " + right + " " + res + " " + str(response))
+		f.write("%s\n" % str(i) + " " + prime + " " + left + " " + right + " " + res + " " + str(response) )
 f.close()
