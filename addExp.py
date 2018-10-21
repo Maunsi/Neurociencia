@@ -1,4 +1,4 @@
-from psychopy import visual, core, event, gui
+from psychopy import visual, core, event#, gui
 import random
 
 def bienvenida(win):
@@ -33,35 +33,33 @@ def read_input_file():
 	input_file.close()
 	return input_list
 	
-def generate_texts(prime, left, right, res):
+def generate_texts(win, prime, left, right, res):
 	text_prime = visual.TextStim(win=win, name='text_prime', text=prime, units='norm', pos=(0, 0))
 	text_left = visual.TextStim(win=win, name='text_left', text=left, units='norm', pos=(-0.25, 0))
 	text_right = visual.TextStim(win=win, name='text_right', text=right, units= 'norm', pos=(0.25, 0))
 	text_res =  visual.TextStim(win=win, name='text_res', text=res, units= 'norm', pos=(0, 0))
-	return textPrime, textLeft, textRight, textRes
+	return text_prime, text_left, text_right, text_res
 
-def generate_mask_texts():
-	# centro(fixation point en el paper)
+def generate_mask_texts(win):
+	# centro (fixation point en el paper)
 	centro = visual.TextStim(win=win, name='centro', text='| |', units='norm', pos=(0,0))
-	# mascara
 	mascara = visual.TextStim(win=win, name='mascara', text='MWMWMWMWMWM', units='norm', pos=(0, 0))
-	# mascaras para los flankers
-	mascara_flanker_left = visual.TextStim(win=win, name='mascara_flanker_left', text='##', units='norm', pos=(-0.5, 0))
-	mascara_flanker_right = visual.TextStim(win=win, name='mascara_flanker_right', text='##', units='norm', pos=(0.5, 0))
-
+	mascara_flanker_left = visual.TextStim(win=win, name='mascara_flanker_left', text='##', units='norm', pos=(-0.25, 0))
+	mascara_flanker_right = visual.TextStim(win=win, name='mascara_flanker_right', text='##', units='norm', pos=(0.25, 0))
 	return centro, mascara, mascara_flanker_left, mascara_flanker_right
 
-################################################################################################################
-<<<<<<< HEAD
 def main():
 	#crear una ventana
 	win=visual.Window(fullscr=True)
 
 	# caja de dialogo
-	cajaDialogo = gui.Dlg()
-	cajaDialogo.addField("ID: ")
+	#cajaDialogo = gui.Dlg()
+	#cajaDialogo.addField("ID: ")
 
-	centro, mascara, mascara_flanker_left, mascara_flanker_right = generate_mask_texts()    
+	#La idea es que tengamos variables de tiempo para las distintas mascaras
+	time = 0.5
+
+	centro, mascara, mascara_flanker_left, mascara_flanker_right = generate_mask_texts(win)    
 
 	#crear el objeto clock que sirve para controlar el tiempo (clock cuenta en segundos)
 	clock = core.Clock()
@@ -84,45 +82,46 @@ def main():
 	while len(input_list) != 0:  #corro mientras queden estimulos
 		trial_id, prime, left, right, res = input_list.pop(0)
 		# prepara target, flankers y primers
-		text_prime, text_left, text_right, text_res = generate_texts(prime, left, right, res)
+		text_prime, text_left, text_right, text_res = generate_texts(win, prime, left, right, res)
 		
 		# mostrar el centro
-		draw(win, {centro}, 1)
+		draw(win, {centro}, time)
 		
 		# mostrar mascara    
-		draw(win, {mascara}, 1)
+		draw(win, {mascara}, time)
 		
 		# mostrar primer de acuerdo a lo especificado en pairAndResInputs.txt
-		draw(win, {text_prime}, 1)
+		draw(win, {text_prime}, time)
 		
 		# mostrar mascara
-		draw(win, {mascara}, 1)
+		draw(win, {mascara}, time)
 		
 		# mostrar mascara para los flankers junto con el centro
-		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, 1)
+		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, time)
 		
 		#Mostrar pares y el centro
-		draw(win, {centro, text_left, text_right}, 1)
+		draw(win, {centro, text_left, text_right}, time)
 		
 		# mostrar mascara para los flankers y el centro
-		draw(win, {centro, mascaraF_fanker_left, mascara_flanker_right}, 1)
+		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, time)
 		
-		#Mostrar resultado y mascaras para los flankers
-		draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, 1)
+		# Mostrar resultado y mascaras para los flankers
+		draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, time)
 		
 		# prueba: igual que getKeys pero espera el tiempo indicado por maxWait, tal vez sirve para 
 		# cortar la prueba en caso de demora o respuesta correcta.
 		
 		trial_by_id[trial_id] = (prime, left, right, res)
-		keys = []
-		keys.append(event.waitKeys(maxWait=2, keyList=["left", "right"], timeStamped=True))
-		trial_responses_by_id[trial_id] = keys
+		
+		trial_responses_by_id[trial_id] = event.waitKeys(maxWait=2, keyList=["left", "right"], timeStamped=True)
 
+	# Si logramos hacer andar gui (u otra opcion) podriamos crear un archivo que sea results + id del sujeto. 
+	# Serviria despues para hacer un loop por todos los archivos y tomar los datos
 	with open("results.txt", "w") as f:
 		for i in range(n):
 			(prime, left, right, res) = trial_by_id[i]
 			response = trial_responses_by_id[i]
-			s = "{} {} {} {} {} {} {}".format(i, prime, left, right, res, response)
+			s = "{} {} {},{} {} {} ".format(i, prime, left, right, res, response)
 			f.write("%s\n" % s)
 	f.close()
 
