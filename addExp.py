@@ -2,18 +2,18 @@ from psychopy import visual, core, event #import some libraries from PsychoPy
 import random
 
 def bienvenida(win):
-    bienvenida = visual.TextStim(win=win, text='AAAAAAAREEEE YOUUUUU REAAADYYYYY?')
-    tres = visual.TextStim(win=win, text='3')
-    dos = visual.TextStim(win=win, text='2')
-    uno = visual.TextStim(win=win, text='1')
-    
-    draw(win, {bienvenida}, 1)
+	bienvenida = visual.TextStim(win=win, text='AAAAAAAREEEE YOUUUUU REAAADYYYYY?')
+	tres = visual.TextStim(win=win, text='3')
+	dos = visual.TextStim(win=win, text='2')
+	uno = visual.TextStim(win=win, text='1')
+	
+	draw(win, {bienvenida}, 1)
 
-    draw(win, {tres}, 1)
+	draw(win, {tres}, 1)
 
-    draw(win, {dos}, 1)
+	draw(win, {dos}, 1)
 
-    draw(win, {uno}, 1)
+	draw(win, {uno}, 1)
 
 
 def draw(win, stimuli, time):
@@ -34,80 +34,89 @@ def read_input_file():
 	return input_list
 	
 def generate_texts(prime, left, right, res):
-	textPrime = visual.TextStim(win=win, name='textPrime', text=prime, units='norm', pos=(0, 0))
-	textLeft = visual.TextStim(win=win, name='textLeft', text=left, units='norm', pos=(-0.5, 0))
-	textRight = visual.TextStim(win=win, name='textRight', text=right, units= 'norm', pos=(0.5, 0))
-	textRes =  visual.TextStim(win=win, name='textRes', text=res, units= 'norm', pos=(0, 0))
+	text_prime = visual.TextStim(win=win, name='text_prime', text=prime, units='norm', pos=(0, 0))
+	text_left = visual.TextStim(win=win, name='text_left', text=left, units='norm', pos=(-0.25, 0))
+	text_right = visual.TextStim(win=win, name='text_right', text=right, units= 'norm', pos=(0.25, 0))
+	text_res =  visual.TextStim(win=win, name='text_res', text=res, units= 'norm', pos=(0, 0))
 	return textPrime, textLeft, textRight, textRes
 
+def generate_mask_texts():
+	# centro(fixation point en el paper)
+	centro = visual.TextStim(win=win, name='centro', text='| |', units='norm', pos=(0,0))
+	# mascara
+	mascara = visual.TextStim(win=win, name='mascara', text='MWMWMWMWMWM', units='norm', pos=(0, 0))
+	# mascaras para los flankers
+	mascara_flanker_left = visual.TextStim(win=win, name='mascara_flanker_left', text='##', units='norm', pos=(-0.5, 0))
+	mascara_flanker_right = visual.TextStim(win=win, name='mascara_flanker_right', text='##', units='norm', pos=(0.5, 0))
+
+	return centro, mascara, mascara_flanker_left, mascara_flanker_right
+
 ################################################################################################################
-#crear una ventana
-win=visual.Window(fullscr=True)
+def main():
+	#crear una ventana
+	win=visual.Window(fullscr=True)
 
-# centro(fixation point en el paper)
-centro = visual.TextStim(win=win, name='centro', text='| |', units='norm', pos=(0,0))
+	centro, mascara, mascara_flanker_left, mascara_flanker_right = generate_mask_texts()    
 
-# mascara
-mascara = visual.TextStim(win=win, name='mascara', text='MWMWMWMWMWM', units='norm', pos=(0, 0))
+	#crear el objeto clock que sirve para controlar el tiempo (clock cuenta en segundos)
+	clock = core.Clock()
 
-# mascaras para los flankers
-mascaraFlankerLeft = visual.TextStim(win=win, name='mascaraFlankerLeft', text='##', units='norm', pos=(-0.5, 0))
-mascaraFlankerRight = visual.TextStim(win=win, name='mascaraFlankerRight', text='##', units='norm', pos=(0.5, 0))
+	bienvenida(win)
 
-#crear el objeto clock que sirve para controlar el tiempo (clock cuenta en segundos)
-clock = core.Clock()
+	#idea para obtener teclas: hago clear antes de res, y hago getKeys despues de res
+	event.clearEvents()
+	pressedKeys = []
 
-bienvenida(win)
+	input_list = read_input_file()
+	random.shuffle(input_list)
+	n = len(input_list)
+	trial_by_id = {}
+	trial_responses_by_id = {}
+	while len(input_list) != 0:  #corro mientras queden estimulos
+		trial_id, prime, left, right, res = input_list.pop(0)
+		# prepara target, flankers y primers
+		text_prime, text_left, text_right, text_res = generate_texts(prime, left, right, res)
+		
+		# mostrar el centro
+		draw(win, {centro}, 1)
+		
+		# mostrar mascara    
+		draw(win, {mascara}, 1)
+		
+		# mostrar primer de acuerdo a lo especificado en pairAndResInputs.txt
+		draw(win, {text_prime}, 1)
+		
+		# mostrar mascara
+		draw(win, {mascara}, 1)
+		
+		# mostrar mascara para los flankers junto con el centro
+		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, 1)
+		
+		#Mostrar pares y el centro
+		draw(win, {centro, text_left, text_right}, 1)
+		
+		# mostrar mascara para los flankers y el centro
+		draw(win, {centro, mascaraF_fanker_left, mascara_flanker_right}, 1)
+		
+		#Mostrar resultado y mascaras para los flankers
+		draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, 1)
+		
+		# prueba: igual que getKeys pero espera el tiempo indicado por maxWait, tal vez sirve para 
+		# cortar la prueba en caso de demora o respuesta correcta.
+		
+		trial_by_id[trial_id] = (prime, left, right, res)
+		keys = []
+		keys.append(event.waitKeys(maxWait=2, keyList=["left", "right"], timeStamped=True))
+		trial_responses_by_id[trial_id] = keys
 
-#idea para obtener teclas: hago clear antes de res, y hago getKeys despues de res
-event.clearEvents()
-pressedKeys = []
+	with open("results.txt", "w") as f:
+		for i in range(n):
+			(prime, left, right, res) = trial_by_id[i]
+			response = trial_responses_by_id[i]
+			s = "{} {} {} {} {} {} {}".format(i, prime, left, right, res, response)
+			f.write("%s\n" % s)
+	f.close()
 
-input_list = read_input_file()
-random.shuffle(input_list)
-n = len(input_list)
-trial_by_id = {}
-trial_responses_by_id = {}
-while len(input_list) != 0:  #corro mientras queden estimulos
-	trial_id, prime, left, right, res = input_list.pop(0)
-    # prepara target, flankers y primers
-	textPrime, textLeft, textRight, textRes = generate_texts(prime, left, right, res)
-    
-    # mostrar el centro
-	draw(win, {centro}, 1)
-    
-    # mostrar mascara    
-	draw(win, {mascara}, 1)
-    
-    # mostrar primer de acuerdo a lo especificado en pairAndResInputs.txt
-	draw(win, {textPrime}, 1)
-    
-    # mostrar mascara
-	draw(win, {mascara}, 1)
-    
-    # mostrar mascara para los flankers junto con el centro
-	draw(win, {centro, mascaraFlankerLeft, mascaraFlankerRight}, 1)
-    
-    #Mostrar pares y el centro
-	draw(win, {centro, textLeft, textRight}, 1)
-    
-    # mostrar mascara para los flankers y el centro
-	draw(win, {centro, mascaraFlankerLeft, mascaraFlankerRight}, 1)
-    
-    #Mostrar resultado y mascaras para los flankers
-	draw(win, {textRes, mascaraFlankerLeft, mascaraFlankerRight}, 1)
-    
-    # prueba: igual que getKeys pero espera el tiempo indicado por maxWait, tal vez sirve para 
-    # cortar la prueba en caso de demora o respuesta correcta.
-	
-	trial_by_id[trial_id] = (prime, left, right, res)
-	keys = []
-	keys.append(event.waitKeys(maxWait=2, keyList=["left", "right"], timeStamped=True))
-	trial_responses_by_id[trial_id] = keys
 
-with open("results.txt", "w") as f:
-	for i in range(n):
-		(prime, left, right, res) = trial_by_id[i]
-		response = trial_responses_by_id[i]
-		f.write("%s\n" % str(i) + " " + prime + " " + left + " " + right + " " + res + " " + str(response))
-f.close()
+if __name__ == '__main__':
+	main()

@@ -1,8 +1,8 @@
-5,3 I SUMAR
-3,4 A REPRESENTAR
-2,3 4 SUMAR
-5,5 O SUMAR
-3,3 6 REPRESENTAR
-2,2 5 SUMAR
-3,3 S REPRESENTAR 
-5,3 8 REPRESENTAR
+0 sumar 2,4 6
+1 sumar 2,3 4
+2 sumar 5,1 B
+3 sumar 3,1 A
+4 representar 3,3 5
+5 representar 2,1 5
+6 representar 3,4 B
+7 representar 1,2 B
