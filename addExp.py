@@ -67,7 +67,7 @@ def main():
 	bienvenida(win)
 
 	# muestra caja de dialogo. Respuestas en gui.data[i]
-	cajaDialogo.show()
+	#cajaDialogo.show()
 
 	#idea para obtener teclas: hago clear antes de res, y hago getKeys despues de res
 	event.clearEvents()
