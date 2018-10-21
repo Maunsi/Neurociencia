@@ -57,7 +57,7 @@ def main():
 	#cajaDialogo.addField("ID: ")
 
 	#La idea es que tengamos variables de tiempo para las distintas mascaras
-	time = 0.5
+	tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2, 2]
 
 	centro, mascara, mascara_flanker_left, mascara_flanker_right = generate_mask_texts(win)    
 
@@ -85,35 +85,35 @@ def main():
 		text_prime, text_left, text_right, text_res = generate_texts(win, prime, left, right, res)
 		
 		# mostrar el centro
-		draw(win, {centro}, time)
+		draw(win, {centro}, tiempos[0])
 		
 		# mostrar mascara    
-		draw(win, {mascara}, time)
+		draw(win, {mascara}, tiempos[1])
 		
 		# mostrar primer de acuerdo a lo especificado en pairAndResInputs.txt
-		draw(win, {text_prime}, time)
+		draw(win, {text_prime}, tiempos[2])
 		
 		# mostrar mascara
-		draw(win, {mascara}, time)
+		draw(win, {mascara}, tiempos[3])
 		
 		# mostrar mascara para los flankers junto con el centro
-		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, time)
+		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, tiempos[4])
 		
 		#Mostrar pares y el centro
-		draw(win, {centro, text_left, text_right}, time)
+		draw(win, {centro, text_left, text_right}, tiempos[5])
 		
 		# mostrar mascara para los flankers y el centro
-		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, time)
+		draw(win, {centro, mascara_flanker_left, mascara_flanker_right}, tiempos[6])
 		
 		# Mostrar resultado y mascaras para los flankers
-		draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, time)
+		draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, tiempos[7])
 		
 		# prueba: igual que getKeys pero espera el tiempo indicado por maxWait, tal vez sirve para 
 		# cortar la prueba en caso de demora o respuesta correcta.
 		
 		trial_by_id[trial_id] = (prime, left, right, res)
 		
-		trial_responses_by_id[trial_id] = event.waitKeys(maxWait=2, keyList=["left", "right"], timeStamped=True)
+		trial_responses_by_id[trial_id] = event.waitKeys(maxWait=tiempos[7], keyList=["left", "right"], timeStamped=True)
 
 	# Si logramos hacer andar gui (u otra opcion) podriamos crear un archivo que sea results + id del sujeto. 
 	# Serviria despues para hacer un loop por todos los archivos y tomar los datos
