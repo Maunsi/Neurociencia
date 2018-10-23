@@ -115,9 +115,8 @@ def main():
 		
 		trial_responses_by_id[trial_id] = event.waitKeys(maxWait=tiempos[7], keyList=["left", "right"], timeStamped=True)
 
-	# Si logramos hacer andar gui (u otra opcion) podriamos crear un archivo que sea results + id del sujeto. 
-	# Serviria despues para hacer un loop por todos los archivos y tomar los datos
-	with open("results.txt", "w") as f:
+	#No hace falta tener un separador, ya sabemos cuanto mide cada experimento (n trials)
+	with open("results.txt", "a") as f:
 		for i in range(n):
 			(prime, left, right, res) = trial_by_id[i]
 			response = trial_responses_by_id[i]
@@ -127,4 +126,6 @@ def main():
 
 
 if __name__ == '__main__':
+	#Podria aca poner un "Esperando empezar el experimento" y que empiece presionando una tecla? Entonces podria hacer el loop de m experimentos, 
+	#y luego llamar al parser de resultados
 	main()

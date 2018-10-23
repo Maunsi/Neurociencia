@@ -1,8 +1,8 @@
-0 sumar 1 3 4 [None] 
-1 sumar 1 1 3 [[('right', 10.136512994766235)]] 
-2 sumar 1 3 A [None] 
-3 sumar 4 1 A [None] 
-4 representar 3 2 1 [None] 
-5 representar 3 5 4 [[('right', 34.46036887168884)]] 
-6 representar 3 5 C [None] 
-7 representar 3 2 C [[('left', 16.70847487449646)]] 
+0 sumar 1,3 4 None 
+1 sumar 1,1 3 None 
+2 sumar 1,3 A None 
+3 sumar 4,1 A None 
+4 representar 3,2 1 None 
+5 representar 3,5 4 None 
+6 representar 3,5 C None 
+7 representar 3,2 C None 
