@@ -1,19 +1,42 @@
 from psychopy import visual, core, event#, gui
 import random
 
-def bienvenida(win):
-	bienvenida = visual.TextStim(win=win, text='AAAAAAAREEEE YOUUUUU REAAADYYYYY?')
-	tres = visual.TextStim(win=win, text='3')
-	dos = visual.TextStim(win=win, text='2')
-	uno = visual.TextStim(win=win, text='1')
+class Trial():
+
+	def __init__(self, prime, left, right, res):
+		self.prime = prime
+		self.left = left
+		self.right = right
+		self.res = res
+		
+	def generate_stimuli(self, win):
+		text_prime = visual.TextStim(win=win, name='text_prime', text=self.prime, units='norm', pos=(0, 0))
+		text_left = visual.TextStim(win=win, name='text_left', text=str(self.left), units='norm', pos=(-0.25, 0))
+		text_right = visual.TextStim(win=win, name='text_right', text=str(self.right), units= 'norm', pos=(0.25, 0))
+		text_res = visual.TextStim(win=win, name='text_res', text=self.res, units= 'norm', pos=(0, 0))
+		return text_prime, text_left, text_right, text_res
+		
+	def __eq__(self, other):
+    """Overrides the default implementation"""
+		return self.prime == other.prime and self.left == other.left and self.right == other.right and self.res == other.res
 	
-	draw(win, {bienvenida}, 1)
+	def __ne__(self, other):
+    """Overrides the default implementation (unnecessary in Python 3)"""
+		return not self.__eq__(other)
 
-	draw(win, {tres}, 1)
+# def bienvenida(win):
+	# bienvenida = visual.TextStim(win=win, text='AAAAAAAREEEE YOUUUUU REAAADYYYYY?')
+	# tres = visual.TextStim(win=win, text='3')
+	# dos = visual.TextStim(win=win, text='2')
+	# uno = visual.TextStim(win=win, text='1')
+	
+	# draw(win, {bienvenida}, 1)
 
-	draw(win, {dos}, 1)
+	# draw(win, {tres}, 1)
 
-	draw(win, {uno}, 1)
+	# draw(win, {dos}, 1)
+
+	# draw(win, {uno}, 1)
 
 
 def draw(win, stimuli, time):
@@ -29,16 +52,11 @@ def read_input_file():
 		# rstrip() para evitar que algun \n moleste
 		trial_id, prime, pairString, res = line.rstrip().split(" ")
 		left, right = pairString.split(",")
-		input_list.append((int(trial_id), prime, left, right, res))
+		trial = Trial(int(trial_id), prime, int(left), int(right), res) #res es una string porque a veces es una latra
+		input_list.append(trial)
 	input_file.close()
 	return input_list
 	
-def generate_texts(win, prime, left, right, res):
-	text_prime = visual.TextStim(win=win, name='text_prime', text=prime, units='norm', pos=(0, 0))
-	text_left = visual.TextStim(win=win, name='text_left', text=left, units='norm', pos=(-0.25, 0))
-	text_right = visual.TextStim(win=win, name='text_right', text=right, units= 'norm', pos=(0.25, 0))
-	text_res =  visual.TextStim(win=win, name='text_res', text=res, units= 'norm', pos=(0, 0))
-	return text_prime, text_left, text_right, text_res
 
 def generate_mask_texts(win):
 	# centro (fixation point en el paper)
@@ -48,9 +66,8 @@ def generate_mask_texts(win):
 	mascara_flanker_right = visual.TextStim(win=win, name='mascara_flanker_right', text='##', units='norm', pos=(0.25, 0))
 	return centro, mascara, mascara_flanker_left, mascara_flanker_right
 
-def main():
+def experiment(win):
 	#crear una ventana
-	win=visual.Window(fullscr=True)
 
 	# caja de dialogo
 	#cajaDialogo = gui.Dlg()
@@ -80,9 +97,9 @@ def main():
 	trial_responses_by_id = {}
 
 	while len(input_list) != 0:  #corro mientras queden estimulos
-		trial_id, prime, left, right, res = input_list.pop(0)
+		trial = input_list.pop(0)
 		# prepara target, flankers y primers
-		text_prime, text_left, text_right, text_res = generate_texts(win, prime, left, right, res)
+		text_prime, text_left, text_right, text_res = trial.generate_stimuli(win)
 		
 		# mostrar el centro
 		draw(win, {centro}, tiempos[0])
@@ -110,22 +127,42 @@ def main():
 		
 		# prueba: igual que getKeys pero espera el tiempo indicado por maxWait, tal vez sirve para 
 		# cortar la prueba en caso de demora o respuesta correcta.
-		
-		trial_by_id[trial_id] = (prime, left, right, res)
-		
-		trial_responses_by_id[trial_id] = event.waitKeys(maxWait=tiempos[7], keyList=["left", "right"], timeStamped=True)
+				
+		trial_responses[trial] = event.waitKeys(maxWait=tiempos[7], keyList=["left", "right"], timeStamped=True)[0]
+	
+	return trial_responses
+	
 
-	#No hace falta tener un separador, ya sabemos cuanto mide cada experimento (n trials)
-	with open("results.txt", "a") as f:
-		for i in range(n):
-			(prime, left, right, res) = trial_by_id[i]
-			response = trial_responses_by_id[i]
-			s = "{} {} {},{} {} {} ".format(i, prime, left, right, res, response)
-			f.write("%s\n" % s)
-	f.close()
+
+def metrics(trials_by_subject):
+	#Cada elemento de la lista tiene un diccionario de trial -> response
+	#Este for es para que no quede vacio el metodo, aca deberiamos hacer todas las cuentillas
+	for trials in trials_by_subject
+		print trials
+	
+
+	# #No hace falta tener un separador, ya sabemos cuanto mide cada experimento (n trials)
+	# with open("results.txt", "a") as f:
+		# for i in range(n):
+			# (prime, left, right, res) = trial_by_id[i]
+			# response = trial_responses_by_id[i]
+			# s = "{} {} {},{} {} {} ".format(i, prime, left, right, res, response)
+			# f.write("%s\n" % s)
+		# f.write("*\n")
+	# f.close()
 
 
 if __name__ == '__main__':
-	#Podria aca poner un "Esperando empezar el experimento" y que empiece presionando una tecla? Entonces podria hacer el loop de m experimentos, 
-	#y luego llamar al parser de resultados
-	main()
+	trials_by_subject = []
+	while True:
+		win = visual.Window(fullscr=True)
+		inicio = visual.TextStim(win=win, text='Bienvenido al mejor experimento de Neurociencia Cognitiva. Presione espacio para comenzar o esc para cancelar. Left -> Letra, Right -> Numero')
+		inicio.draw()
+		win.flip()
+		key = event.waitKeys(keyList=["space", "escape"])
+		if key[0] == "space":
+			trials_by_subject.append(experiment(win))
+		elif key[0] == "escape":
+			break
+	metrics(trials_by_subject)
+		

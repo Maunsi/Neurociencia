@@ -3,7 +3,6 @@ import random, sys, string
 def generarMitadPrime(prime, start, end, input_list):
 	mitad = (start + end)
 	for i in range(start, end):
-		print(i)
 		left = random.randint(1,5)
 		right = random.randint(1,5)
 		res = 0
@@ -15,7 +14,7 @@ def generarMitadPrime(prime, start, end, input_list):
 				res = random.randint(1,5)
 		else:
 			res = random.choice(['A', 'B', 'C', 'D'])
-		input_list.append((i, prime, left, right, res))
+		input_list.append(prime, left, right, res))
 
 def main():
 	if(len(sys.argv) != 2):
@@ -31,9 +30,8 @@ def main():
 		generarMitadPrime('representar', mitad, n, input_list)
 
 		f = open("pairAndResInputs.txt", "w")
-		for (i, prime, left, right, res) in input_list:
-			# s = str(i) + " " + prime + " " + str(left) + "," + str(right) + " " + str(res)
-			s = "{} {} {},{} {}".format(i, prime, left, right, res)
+		for (prime, left, right, res) in input_list:
+			s = "{} {} {},{} {}".format(prime, left, right, res)
 			f.write("%s\n" % s)
 		f.close()
 
