@@ -1,5 +1,6 @@
 from psychopy import visual, core, event#, gui
 import random
+import controlSubjetivo
 
 class Trial():
 
@@ -101,7 +102,7 @@ def experiment(win):
         draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, tiempos[7])
 
         trial_responses[trial] = event.waitKeys(maxWait=tiempos[7], keyList=["left", "right"], timeStamped=True)
-
+        
     return trial_responses
     
 def metrics(trials_by_subject):
@@ -121,10 +122,8 @@ def metrics(trials_by_subject):
 		# f.write("*\n")
 	# f.close()
 
-
 if __name__ == '__main__':
     trials_by_subject = []
-    
     while True:
         win = visual.Window(fullscr=True)
         inicio = visual.TextStim(win=win, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
@@ -137,6 +136,8 @@ if __name__ == '__main__':
         key = event.waitKeys(keyList=["space", "escape"])[0]
         if key == "space":
             trials_by_subject.append(experiment(win))
+            # hace el control subjetivo. Por ahora escribe el resultado en un .txt aparte. 
+            controlSubjetivo.control_subjetivo()
         elif key == "escape":
             break
     metrics(trials_by_subject)
