@@ -134,9 +134,9 @@ if __name__ == '__main__':
                                           \nFlecha derecha si es un numero.")
         inicio.draw()
         win.flip()
-        key = event.waitKeys(keyList=["space", "escape"])
-        if key[0] == "space":
+        key = event.waitKeys(keyList=["space", "escape"])[0]
+        if key == "space":
             trials_by_subject.append(experiment(win))
-        elif key[0] == "escape":
+        elif key == "escape":
             break
     metrics(trials_by_subject)
