@@ -33,13 +33,17 @@ def preguntar_prime(ventana, texto_inicial, texto_final):
     ventana.flip()
     core.wait(1)
     return respuesta
+
+def control_subjetivo():
+    ventana = visual.Window(fullscr=True)
+    bienvenida = "Humanoide, diga sin perder un segundo: vio las palabras SUMAR o REPRESENTAR mientras realizaba las pruebas? \
+                  \nResponda presionando una tecla del 1 al 7.\n Si no lo hace sufrira las consecuencias."
+    agradecimiento = "Muchas gracias por su colaboracion. Activen el rayo vaporizador.. PZZZZZTTT"
+    
+    respuesta = preguntar_prime(ventana, bienvenida, agradecimiento)
+    escribir_resultado(respuesta, "resultadosControlSubjetivo.txt", "a")
     
 
 if __name__ == "__main__":
-    ventana = visual.Window(fullscr=True)
-    bienvenida = "Humanoide, diga sin perder un segundo: vio las palabras sumar o representar mientras realizaba las pruebas? \
-Responda presionando una tecla del 1 al 7. Si no lo hace sufrira las consencuencias."
-    agradecimiento = "Muchas gracias por su colaboracion. Traigan el rayo vaporizador.. PZZZZZTTT"
+    control_subjetivo()
     
-    respuesta = preguntar_prime(ventana, bienvenida, agradecimiento)
-    escribir_resultado(respuesta, "resultadoPreguntaPrime.txt", "a")
