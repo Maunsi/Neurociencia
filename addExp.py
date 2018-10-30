@@ -1,6 +1,7 @@
 from psychopy import visual, core, event#, gui
 import random
 import controlSubjetivo
+import analysis
 
 class Trial():
 
@@ -59,9 +60,10 @@ def generate_mask_texts(win):
     mascara_flanker_right = visual.TextStim(win=win, name='mascara_flanker_right', text='##', units='norm', pos=(0.25, 0))
     return centro, mascara, mascara_flanker_left, mascara_flanker_right
 
+#Para el control objetivo deberiamos refactorizar esta funcion y reutilizarla
 def experiment(win):
     #La idea es que tengamos variables de tiempo para las distintas mascaras
-    tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2, 2]
+    tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2, 1]
 
     centro, mascara, mascara_flanker_left, mascara_flanker_right = generate_mask_texts(win)    
 
@@ -102,33 +104,30 @@ def experiment(win):
         # Mostrar resultado y mascaras para los flankers
         draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, tiempos[7])
 
-        trial_responses[trial] = event.waitKeys(maxWait=tiempos[7], keyList=["left", "right"], timeStamped=True)
-        
+        keys = event.waitKeys(maxWait=tiempos[7], keyList=['left', 'right'], timeStamped=True)
+        trial_responses[trial] = keys
+        print keys
     return trial_responses
-    
-def metrics(trials_by_subject):
-    #Cada elemento de la lista tiene un diccionario de trial -> response
-    #Este for es para que no quede vacio el metodo, aca deberiamos hacer todas las cuentillas
-    for trials in trials_by_subject:
-        print trials
 
-
+#Esto lo voy a refactorizar para que no este tan horrible
 if __name__ == '__main__':
-    trials_by_subject = []
+    trials_by_subject = {}
+    control_by_subject = {}
     win = visual.Window(fullscr=True)
     inicio = visual.TextStim(win=win, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
                                           Presione ESPACIO para comenzar o ESC para cancelar.\n \
                                           Instrucciones:\
                                           Flecha Izquierda si es una letra \
                                           \nFlecha derecha si es un numero.")
+    subject = 0
     while True:
         inicio.draw()
         win.flip()
         key = event.waitKeys(keyList=["space", "escape"])[0]
         if key == "space":
-            trials_by_subject.append(experiment(win))
-            # hace el control subjetivo. Por ahora escribe el resultado en un .txt aparte. 
-            controlSubjetivo.control_subjetivo(win)
+            trials_by_subject[subject] = experiment(win)
+            control_by_subject[subject] = controlSubjetivo.control_subjetivo(win)
+            subject += 1
         elif key == "escape":
             break
-    metrics(trials_by_subject)
+    analysis.analyze(trials_by_subject, control_by_subject)

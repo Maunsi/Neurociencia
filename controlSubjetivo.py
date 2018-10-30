@@ -41,7 +41,8 @@ def control_subjetivo(ventana):
                   \nResponda presionando una tecla del 1 al 7.\n Si no lo hace sufrira las consecuencias."
     agradecimiento = "Muchas gracias por su colaboracion. Activen el rayo vaporizador.. PZZZZZTTT"
     respuesta = preguntar_prime(ventana, bienvenida, agradecimiento)
-    escribir_resultado(respuesta, "resultadosControlSubjetivo.txt", "a")
+    #escribir_resultado(respuesta, "resultadosControlSubjetivo.txt", "a")
+    return respuesta
     
 
 if __name__ == "__main__":
