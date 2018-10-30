@@ -29,6 +29,9 @@ class Trial():
         """Overrides the default implementation (unnecessary in Python 3)"""
         return not self.__eq__(other)
 
+    def __repr__(self):
+    	return "{} {} {} {} ".format(self.prime, self.left, self.right, self.res)
+
 def draw(win, stimuli, time):
     for stimulus in stimuli:
         stimulus.draw()
@@ -67,9 +70,7 @@ def experiment(win):
     
     input_list = read_input_file()
     random.shuffle(input_list)
-    n = len(input_list)
-    trial_by_id = {}
-    trial_responses_by_id = {}
+
     trial_responses = {}
 
     while len(input_list) != 0:  #corro mientras queden estimulos
@@ -110,34 +111,24 @@ def metrics(trials_by_subject):
     #Este for es para que no quede vacio el metodo, aca deberiamos hacer todas las cuentillas
     for trials in trials_by_subject:
         print trials
-    
 
-    # #No hace falta tener un separador, ya sabemos cuanto mide cada experimento (n trials)
-    # with open("results.txt", "a") as f:
-		# for i in range(n):
-			# (prime, left, right, res) = trial_by_id[i]
-			# response = trial_responses_by_id[i]
-			# s = "{} {} {},{} {} {} ".format(i, prime, left, right, res, response)
-			# f.write("%s\n" % s)
-		# f.write("*\n")
-	# f.close()
 
 if __name__ == '__main__':
     trials_by_subject = []
-    while True:
-        win = visual.Window(fullscr=True)
-        inicio = visual.TextStim(win=win, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
+    win = visual.Window(fullscr=True)
+    inicio = visual.TextStim(win=win, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
                                           Presione ESPACIO para comenzar o ESC para cancelar.\n \
                                           Instrucciones:\
                                           Flecha Izquierda si es una letra \
                                           \nFlecha derecha si es un numero.")
+    while True:
         inicio.draw()
         win.flip()
         key = event.waitKeys(keyList=["space", "escape"])[0]
         if key == "space":
             trials_by_subject.append(experiment(win))
             # hace el control subjetivo. Por ahora escribe el resultado en un .txt aparte. 
-            controlSubjetivo.control_subjetivo()
+            controlSubjetivo.control_subjetivo(win)
         elif key == "escape":
             break
     metrics(trials_by_subject)

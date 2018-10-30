@@ -34,10 +34,9 @@ def preguntar_prime(ventana, texto_inicial, texto_final):
     core.wait(1)
     return respuesta
 
-def control_subjetivo():
+def control_subjetivo(ventana):
     """ Crea la ventana, presenta las instrucciones y escribe la respuesta en un archivo.
     """
-    ventana = visual.Window(fullscr=True)
     bienvenida = "Humanoide, diga sin perder un segundo: vio las palabras SUMAR o REPRESENTAR mientras realizaba las pruebas? \
                   \nResponda presionando una tecla del 1 al 7.\n Si no lo hace sufrira las consecuencias."
     agradecimiento = "Muchas gracias por su colaboracion. Activen el rayo vaporizador.. PZZZZZTTT"
