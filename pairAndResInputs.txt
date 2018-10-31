@@ -1,8 +1,8 @@
-0 sumar 1,3 4
-1 sumar 1,1 3
-2 sumar 1,3 A
-3 sumar 4,1 A
-4 representar 3,2 1
-5 representar 3,5 4
-6 representar 3,5 C
-7 representar 3,2 C
+sumar 3,3 6
+sumar 4,3 5
+sumar 4,3 C
+sumar 2,2 D
+representar 2,3 5
+representar 3,4 1
+representar 3,1 A
+representar 1,4 A

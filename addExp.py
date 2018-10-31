@@ -2,36 +2,7 @@ from psychopy import visual, core, event#, gui
 import random
 import controlSubjetivo
 import analysis
-
-class Trial():
-
-    def __init__(self, trial_id, prime, left, right, res):  
-        self.prime = prime
-        self.left = left
-        self.right = right
-        self.res = res
-        
-    def generate_stimuli(self, win):
-        text_prime = visual.TextStim(win=win, name='text_prime', text=self.prime, units='norm', pos=(0, 0))
-        text_left = visual.TextStim(win=win, name='text_left', text=str(self.left), units='norm', pos=(-0.25, 0))
-        text_right = visual.TextStim(win=win, name='text_right', text=str(self.right), units= 'norm', pos=(0.25, 0))
-        text_res = visual.TextStim(win=win, name='text_res', text=self.res, units= 'norm', pos=(0, 0))
-        return text_prime, text_left, text_right, text_res
-    
-    def __eq__(self, other):
-        """Overrides the default implementation""" 
-        return self.prime == other.prime and self.left == other.left and self.right == other.right and self.res == other.res
-    
-    def __hash__(self):
-        """ Ni idea pero si hay override de __eq__ es necesario redefinir esta funcion"""
-        return id(self)
-        
-    def __ne__(self, other):
-        """Overrides the default implementation (unnecessary in Python 3)"""
-        return not self.__eq__(other)
-
-    def __repr__(self):
-    	return "{} {} {} {} ".format(self.prime, self.left, self.right, self.res)
+from trial import Trial
 
 def draw(win, stimuli, time):
     for stimulus in stimuli:
@@ -44,9 +15,9 @@ def read_input_file():
     input_file = open("pairAndResInputs.txt", "r")
     for line in input_file:
         # rstrip() para evitar que algun \n moleste
-        trial_id, prime, pairString, res = line.rstrip().split(" ")
+        prime, pairString, res = line.rstrip().split(" ")
         left, right = pairString.split(",")
-        trial = Trial(int(trial_id), prime, int(left), int(right), res) #res es una string porque a veces es una latra
+        trial = Trial(prime, int(left), int(right), res) #res es una string porque a veces es una latra
         input_list.append(trial)
     input_file.close()
     return input_list
@@ -63,7 +34,7 @@ def generate_mask_texts(win):
 #Para el control objetivo deberiamos refactorizar esta funcion y reutilizarla
 def experiment(win):
     #La idea es que tengamos variables de tiempo para las distintas mascaras
-    tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2, 1]
+    tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2, 0]
 
     centro, mascara, mascara_flanker_left, mascara_flanker_right = generate_mask_texts(win)    
 
@@ -104,9 +75,8 @@ def experiment(win):
         # Mostrar resultado y mascaras para los flankers
         draw(win, {text_res, mascara_flanker_left, mascara_flanker_right}, tiempos[7])
 
-        keys = event.waitKeys(maxWait=tiempos[7], keyList=['left', 'right'], timeStamped=True)
-        trial_responses[trial] = keys
-        print keys
+        trial_responses[trial] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=True)
+
     return trial_responses
 
 #Esto lo voy a refactorizar para que no este tan horrible
