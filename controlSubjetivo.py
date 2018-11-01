@@ -1,4 +1,4 @@
-from psychopy import visual, core, event
+from psychopy import visual, event, core
 
 def escribir_resultado(resultado, nombre_archivo, modo):
     """ Guarda la respuesta en un archivo de texto.
@@ -32,6 +32,7 @@ def preguntar_prime(ventana, texto_inicial, texto_final):
     agradecimiento.draw()
     ventana.flip()
     core.wait(1)
+    
     return respuesta
 
 def control_subjetivo(ventana):

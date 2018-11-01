@@ -1,8 +1,2 @@
-sumar 3,3 6
-sumar 4,3 5
-sumar 4,3 C
-sumar 2,2 D
-representar 2,3 5
-representar 3,4 1
-representar 3,1 A
-representar 1,4 A
+sumar 3,2 C
+representar 5,1 A

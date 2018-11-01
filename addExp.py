@@ -1,6 +1,7 @@
-from psychopy import visual, core, event#, gui
+from psychopy import visual, core, event
 import random
 import controlSubjetivo
+import controlObjetivo
 import analysis
 from trial import Trial
 
@@ -22,7 +23,6 @@ def read_input_file():
     input_file.close()
     return input_list
 
-
 def generate_mask_texts(win):
     # centro (fixation point en el paper)
     centro = visual.TextStim(win=win, name='centro', text='| |', units='norm', pos=(0,0))
@@ -32,7 +32,7 @@ def generate_mask_texts(win):
     return centro, mascara, mascara_flanker_left, mascara_flanker_right
 
 #Para el control objetivo deberiamos refactorizar esta funcion y reutilizarla
-def experiment(win):
+def experiment(win, correr_hasta):
     #La idea es que tengamos variables de tiempo para las distintas mascaras
     tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2, 0]
 
@@ -46,7 +46,17 @@ def experiment(win):
 
     trial_responses = {}
 
-    while len(input_list) != 0:  #corro mientras queden estimulos
+    ########################################
+    # ASCO QUE DEJO SAMUEL AL PASAR POR AQUI
+
+    if correr_hasta == "fin":
+        tope = 0
+    elif correr_hasta == "mitad":
+        tope = len(input_list) // 2
+        
+    ########################################
+
+    while len(input_list) != tope:  #corro mientras queden estimulos
         trial = input_list.pop(0)
         # prepara target, flankers y primers
         text_prime, text_left, text_right, text_res = trial.generate_stimuli(win)
@@ -82,21 +92,24 @@ def experiment(win):
 #Esto lo voy a refactorizar para que no este tan horrible
 if __name__ == '__main__':
     trials_by_subject = {}
-    control_by_subject = {}
+    control_subjetivo_by_subject = {}
+    control_objetivo_by_subject = {}
     win = visual.Window(fullscr=True)
-    inicio = visual.TextStim(win=win, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
+    consigna_experimento = visual.TextStim(win=win, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
                                           Presione ESPACIO para comenzar o ESC para cancelar.\n \
                                           Instrucciones:\
-                                          Flecha Izquierda si es una letra \
-                                          \nFlecha derecha si es un numero.")
+                                          Presione L si es una letra \
+                                          \nPresione A si es un numero.")
     subject = 0
+    correr_hasta_fin = "fin"
     while True:
-        inicio.draw()
+        consigna_experimento.draw()
         win.flip()
         key = event.waitKeys(keyList=["space", "escape"])[0]
         if key == "space":
-            trials_by_subject[subject] = experiment(win)
-            control_by_subject[subject] = controlSubjetivo.control_subjetivo(win)
+            trials_by_subject[subject] = experiment(win, correr_hasta_fin)
+            control_subjetivo_by_subject[subject] = controlSubjetivo.control_subjetivo(win)
+            control_objetivo_by_subject[subject] = controlObjetivo.control_objetivo(win)
             subject += 1
         elif key == "escape":
             break
