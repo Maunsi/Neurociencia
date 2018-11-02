@@ -38,18 +38,20 @@ def preguntar_prime(ventana, texto_inicial, texto_final):
 def control_subjetivo(ventana):
     """ Crea la ventana, presenta las instrucciones y escribe la respuesta en un archivo.
     """
-    pregunta_prime = "Humanoide, otra frase graciosa que no apure: vio las palabras SUMAR o REPRESENTAR mientras realizaba las pruebas? \
+    pregunta_prime = "Humanoide, vio las palabras SUMAR o REPRESENTAR mientras realizaba las pruebas? \
                   \nResponda presionando una tecla del 1 al 7.\n Si no lo hace sufrira las consecuencias."
-    prepararse = "Ahora preparese para la proxima pregunta"
+    prepararse = "Ahora preparese para la proxima pregunta."
     respuesta_prime = preguntar_prime(ventana, pregunta_prime, prepararse)
 
+    pregunta_flankers = "Si, si, estamos al tanto de que su vida no tiene sentido. Si,\
+                         podemos ser muy agresivos a pesar de que usted nos ayuda\
+                         voluntariamente. Vio los dos numeros?"
     agradecimiento = "Muchas gracias por su colaboracion. Activen el rayo vaporizador.. PZZZZZTTT"
-    pregunta_flankers = " Algo gracioso que va a escribir Samuel. Viste los dos numeros?"
     respuesta_flankers = preguntar_prime(ventana, pregunta_flankers, agradecimiento)
 
     return max(int(respuesta_prime), int(respuesta_flankers))
-    
 
 if __name__ == "__main__":
-    control_subjetivo()
+    ventana = visual.Window(fullscr=True)
+    control_subjetivo(ventana)
     

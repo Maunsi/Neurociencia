@@ -1,2 +1,2 @@
-sumar 3,2 C
-representar 5,1 A
+sumar 3,4 B
+representar 4,4 A

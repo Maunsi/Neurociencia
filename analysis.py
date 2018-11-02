@@ -3,9 +3,7 @@ from trial import Trial
 def analyze(trials_by_subject, control_by_subject):
 	trials_by_subject = filter_over_four(trials_by_subject, control_by_subject)
 	trials_by_subject = filter_letter_trials(trials_by_subject)
-
-
-
+	pass
 
 def filter_letter_trials(trials_by_subject):
 	new_dictionary = {}
