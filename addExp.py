@@ -86,39 +86,41 @@ def experimento(ventana, estimulos, mascaras):
 
 	return respuestas_por_prueba
 
-
 def rutina_experimentos():
-	ventana = visual.Window(fullscr=True, monitor='addExp')
-	estimulos = read_input_file()
-	pruebas_y_resultados_por_sujeto = {}
-	control_subjetivo_por_sujeto = {}
-	control_objetivo_operaciones_por_sujeto = {}
-	control_objetivo_pares_por_sujeto = {}
-	consigna_experimento = visual.TextStim(win=ventana, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
-										  Presione ESPACIO para comenzar o ESC para cancelar.\n \
-										  Instrucciones:\
-                                          \n La tarea consiste en categorizar lo mas rapido y preciso que pueda, si el simbolo que aparece en el centro de la pantalla es un numero o una letra\
-										  Presione L si es una letra \
-										  \nPresione A si es un numero.")
-	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
-	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
-	sujeto = 0
-	while True:
-		consigna_experimento.draw()
-		ventana.flip()
-		key = event.waitKeys(keyList=["space", "escape"])[0]
-		if key == "space":
-			pruebas_y_resultados_por_sujeto[sujeto] = experimento(ventana, estimulos, mascaras)
-			control_subjetivo_por_sujeto[sujeto] = control.control_subjetivo(ventana)
-			control_objetivo_operaciones, control_objetivo_pares = control.control_objetivo(ventana, estimulos, mascaras)
-			control_objetivo_operaciones_por_sujeto[sujeto] = control_objetivo_operaciones
-			control_objetivo_pares_por_sujeto = control_objetivo_pares
-			agradecimiento(ventana, "agradecimiento.png")
-			sujeto += 1
-		elif key == "escape":
-			break
-	analizador.analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
-		control_objetivo_pares_por_sujeto);
+    ventana = visual.Window(fullscr=True, monitor="addExp", color=(0,0,0))
+    ventana.flip()
+    ventana.mouseVisible = False
+    estimulos = read_input_file()
+    pruebas_y_resultados_por_sujeto = {}
+    control_subjetivo_por_sujeto = {}
+    control_objetivo_operaciones_por_sujeto = {}
+    control_objetivo_pares_por_sujeto = {}
+    consigna_experimento = visual.TextStim(win=ventana, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
+    									  Presione ESPACIO para comenzar o ESC para cancelar.\n \
+                                          Instrucciones:\
+                                          \nLa tarea consiste en categorizar lo mas rapido y preciso que pueda, si el simbolo que aparece en el centro de la pantalla es un numero o una letra\
+                                          Presione L si es una letra \
+                                          \nPresione A si es un numero.")
+    centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
+    mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
+    sujeto = 0
+    while True:
+        consigna_experimento.draw()
+        ventana.flip()
+        key = event.waitKeys(keyList=["space", "escape"])[0]
+        if key == "space":
+            pruebas_y_resultados_por_sujeto[sujeto] = experimento(ventana, estimulos, mascaras)
+            control_subjetivo_por_sujeto[sujeto] = control.control_subjetivo(ventana)
+            control_objetivo_operaciones, control_objetivo_pares = control.control_objetivo(ventana, estimulos, mascaras)
+            control_objetivo_operaciones_por_sujeto[sujeto] = control_objetivo_operaciones
+            control_objetivo_pares_por_sujeto = control_objetivo_pares
+            agradecimiento(ventana, "agradecimiento.png")
+            sujeto += 1
+        elif key == "escape":
+            break
+        analizador.analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
+        control_objetivo_pares_por_sujeto);
 
 if __name__ == '__main__':
-	rutina_experimentos()
+    rutina_experimentos()
+
