@@ -82,7 +82,7 @@ def experimento(ventana, estimulos, mascaras):
 		text_prime, text_left, text_right, text_res = estimulo.generate_stimuli(ventana)
 		dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras)
 		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=True)
-
+	#diccionario de prueba->tupla de respuesta
 	return respuestas_por_prueba
 
 
@@ -110,7 +110,7 @@ def rutina_experimentos():
 			control_subjetivo_por_sujeto[sujeto] = control.control_subjetivo(ventana)
 			control_objetivo_operaciones, control_objetivo_pares = control.control_objetivo(ventana, estimulos, mascaras)
 			control_objetivo_operaciones_por_sujeto[sujeto] = control_objetivo_operaciones
-			control_objetivo_pares_por_sujeto = control_objetivo_pares
+			control_objetivo_pares_por_sujeto[sujeto] = control_objetivo_pares
 			agradecimiento(ventana, "agradecimiento.png")
 			sujeto += 1
 		elif key == "escape":

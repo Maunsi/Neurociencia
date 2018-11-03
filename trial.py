@@ -17,6 +17,12 @@ class Trial():
     
     def is_letter_trial(self):
         return self.res.isalpha()
+
+    def is_sum_trial(self):
+        return self.prime == "sumar"
+
+    def is_rep_trial(self):
+        return self.prime == "representar"
         
     def __eq__(self, other):
         """Overrides the default implementation""" 
