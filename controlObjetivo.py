@@ -2,6 +2,8 @@ import random
 from psychopy import visual, core, event
 from trial import Trial
 
+
+#Yo descartaria este modulo
 def draw(ventana, stimuli, time):
     for stimulus in stimuli:
         stimulus.draw()
