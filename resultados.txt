@@ -1,0 +1,10 @@
+Sujeto 0
+Resultados: 
+Trial: sumar 3 4 B , respuesta: letra, timestamp: 6.88243913651
+Trial: representar 4 4 A , respuesta: letra, timestamp: 10.0209050179
+Resultados control objetivo operaciones: 
+Trial: sumar 3 4 B , respuesta: sumar, timestamp: 18.701210022
+Resultados control objetivo pares: 
+Trial: representar 4 4 A , respuesta: par, timestamp: 22.6923840046
+Resultados control subjetivo: 
+1
