@@ -2,10 +2,37 @@ from trial import Trial
 from scipy import stats
 
 def analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto):
+	#Como primer paso por las dudas guardamos los resultados en un archivo
+	escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto)
 	pruebas_y_resultados_por_sujeto = filtrar_mayores_a_cuatro(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto)
 	pruebas_y_resultados_por_sujeto = filtrar_pruebas_letra(pruebas_y_resultados_por_sujeto)
 	analisis_control_objetivo(control_objetivo_pares_por_sujeto, control_objetivo_operaciones_por_sujeto)
 	pass
+
+
+escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto):
+	with open('resultados', 'w') as file:
+		#Primero escribo pruebas_y_resultados_por_sujeto
+		file.write('Resultados del experimento:\n')
+		escribir_diccionario(file, pruebas_y_resultados_por_sujeto, 'letra', 'numero')
+		file.write('Resultados del control subjetivo:\n')
+		for sujeto, control_subjetivo in control_subjetivo_por_sujeto.iteritems():
+			s = "Sujeto: {}, respuesta control subjetivo: {}\n".format(sujeto, control_subjetivo)
+			file.write(s)
+		file.write('Resultados del control objetivo de operaciones\n')
+		escribir_diccionario(file, control_objetivo_operaciones_por_sujeto, 'sumar', 'representar')
+		file.write('Resultados del control objetivo de pares\n')
+		escribir_diccionario(file, control_objetivo_pares_por_sujeto, 'par', 'impar')
+		file.close()
+
+def escribir_diccionario(file, diccionario_de_diccionarios, significado_l, significado_a)
+	for sujeto, resultado_por_prueba in diccionario_de_diccionarios.iteritems():
+		for prueba, resultado in resultado_por_prueba.iteritems():
+			#Aprovecho y transformo las teclas a la respuesta correspondiente
+			(tecla, timestamp) = resultado
+			significado_tecla = significado_l if tecla == 'l' else significado_a
+			s = "Sujeto: {}, trial: {}, respuesta: {}, timestamp: {}\n".format(sujeto, prueba, significado_tecla, timestamp)
+			file.write(s)
 
 def filtrar_pruebas_letra(pruebas_y_resultados_por_sujeto):
 	sin_letras = {}
