@@ -39,14 +39,15 @@ def preguntar_prime(ventana, texto_inicial, texto_final):
 def control_subjetivo(ventana):
     """ Crea la ventana, presenta las instrucciones y escribe la respuesta en un archivo.
     """
-    pregunta_prime = "Humanoide, vio las palabras SUMAR o REPRESENTAR mientras realizaba las pruebas? \
-                  \nResponda presionando una tecla del 1 al 7.\n Si no lo hace sufrira las consecuencias."
+    pregunta_prime = "Humanoide, que tanto pudo identificar las palabras SUMAR o REPRESENTAR mientras realizaba los trials? \
+                  \nResponda en la siguiente escala, del 1 al 7. Siendo 1 \"no las identifique en ninguno de los trials.\" y 7 \"las identifique en todos los trials\"\
+                  .\n Si no lo hace sufrira las consecuencias."
     prepararse = "Ahora preparese para la proxima pregunta."
     respuesta_prime = preguntar_prime(ventana, pregunta_prime, prepararse)
 
-    pregunta_flankers = "Si, si, estamos al tanto de que su vida no tiene sentido. Si,\
-                         podemos ser muy agresivos a pesar de que usted nos ayuda\
-                         voluntariamente. Vio los dos numeros? \nResponda presionando una tecla del 1 al 7."
+    pregunta_flankers = "Durante la tarea, previamente a que apareciera el numero o letra que usted categorizaba, aparecian en cada trial\
+    dos numeros a ambos lados del punto de fijacion. Que tanto pudo identificar estos numeros? \nResponda en la siguiente escala, del 1 al 7. \
+    Siendo 1 \"no los identifique en ninguno de los trials.\" y 7 \"los identifique en todos los trials\""
     agradecimiento = "Muchas gracias por su colaboracion. Activen el rayo vaporizador.. PZZZZZTTT"
     respuesta_flankers = preguntar_prime(ventana, pregunta_flankers, agradecimiento)
 
@@ -57,27 +58,34 @@ def control_objetivo(ventana, estimulos, mascaras):
     primera_mitad_estimulos = estimulos[:mitad]
     segunda_mitad_estimulos = estimulos[mitad:]
     primera_consigna =  visual.TextStim(win=ventana, text="Por favor, querido ser celestial nacido de la bondad misma:\
-                                    \nidentifique si en los siguientes trials aparecen las palabras\
-                                    SUMAR o REPRESENTAR. \
-                                    \nInstrucciones:\
+                                    \nla siguiente tarea consiste en identificar si en los siguientes trials aparecen las palabras\
+                                    SUMAR o REPRESENTAR.\
+                                    \nPresione ESPACIO para continuar.")
+    primera_consigna_bis = visual.TextStim(win=ventana, text="Instrucciones:\
                                     \n\tApretar L si la palabra es SUMAR.\
                                     \n\tApretar A si la palabra es REPRESENTAR.\
-                                    \nSi no sabe, mienta y si miente sepa que es peor que Menem.\
+                                    \nSi no sabe, responda igual, por mas de que tenga que adivinar. No se estrese.\
                                     \n\nPresione ESPACIO para comenzar.")
-
-    segunda_consigna =  visual.TextStim(win=ventana, text ="Querida persona, buena como el agua mineral, le pedimos ahora que indique\
-                        si el flanker izquierdo es par o impar. Si falla, no vuelve a subir a la\
-                        calesita.\
-                        \nInstrucciones:\
-                        \n\tApretar L si el flanker es PAR.\
-                        n\tApretar A si el flanker es IMPAR.\
+    segunda_consigna =  visual.TextStim(win=ventana, text ="Querida persona, buena como el agua mineral, \
+    durante la tarea, previamente a que apareciera el numero o letra que usted categorizaba, aparecian en cada trial\
+    dos numeros a ambos lados del punto de fijacion. En esta parte necesitamos que indique\
+    si el numero que se ubica a la izquierda del punto de fijacion, es par o impar. Si no sabe, responda igual, por mas de que tenga que adivinar. No se estrese.\"\
+    \n\nPresione ESPACIO para continuar.")
+    segunda_consigna_bis = visual.TextStim(win=ventana, text="Instrucciones:\
+                        \nApretar L si el flanker es PAR.\
+                        \nApretar A si el flanker es IMPAR.\
                         \n\nPresione ESPACIO para comenzar.")
     primera_consigna.draw()
     ventana.flip()
     event.waitKeys(keyList=["space"])
+    primera_consigna_bis.draw()
+    ventana.flip()
+    event.waitKeys(keyList=["space"])
     control_objetivo_operaciones = addExp.experimento(ventana, primera_mitad_estimulos, mascaras)
-
     segunda_consigna.draw()
+    ventana.flip()
+    event.waitKeys(keyList=["space"])
+    segunda_consigna_bis.draw()
     ventana.flip()
     event.waitKeys(keyList=["space"])
     control_objetivo_pares = addExp.experimento(ventana, segunda_mitad_estimulos, mascaras)
