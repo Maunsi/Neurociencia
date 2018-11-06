@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from psychopy import visual, core, event
 import random
 import control
@@ -95,12 +98,13 @@ def rutina_experimentos():
 	control_subjetivo_por_sujeto = {}
 	control_objetivo_operaciones_por_sujeto = {}
 	control_objetivo_pares_por_sujeto = {}
-	consigna_experimento = visual.TextStim(win=ventana, text="Bienvenido al mejor experimento de Neurociencia Cognitiva.\
-									  Presione ESPACIO para comenzar o ESC para cancelar.\n \
-									  Instrucciones:\
-									  \nLa tarea consiste en categorizar lo mas rapido y preciso que pueda, si el simbolo que aparece en el centro de la pantalla es un numero o una letra\
-									  Presione L si es una letra \
-									  \nPresione A si es un numero.")
+	consigna_experimento = visual.TextStim(win=ventana, text=u"Bienvenido al mejor experimento de Neurociencia Cognitiva.\
+								\n\nINSTRUCCIONES:\
+								\nLa tarea consiste en categorizar lo más rápido y preciso que pueda,\
+                                si el símbolo que aparece en el centro de la pantalla es un número o una letra.\
+								\n * Presione L si es una letra \
+								\n * Presione A si es un número.\
+                                \n\nPresione ESPACIO para comenzar o ESC para cancelar.")
 	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
 	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
 	sujeto = 0
