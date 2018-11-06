@@ -1,0 +1,7 @@
+sujeto,operacion,izquierdo,derecho,res,respuesta,t,respuesta_co_operacion,t_co_operacion,respuesta_co_pares,t_co_pares,control_subjetivo
+0,sumar,3,4,B,letra,5.63957691193,representar,18.1310830116,,,2
+0,representar,4,4,A,letra,8.62310385704,,,par,22.3795399666,2
+1,sumar,3,4,B,letra,32.0990560055,,,,,7
+1,representar,4,4,A,numero,35.9708898067,,,par,52.4871017933,7
+2,sumar,3,4,B,,,,,,,1
+2,representar,4,4,A,,,,,,,1

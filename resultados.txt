@@ -1,10 +1,30 @@
 Sujeto 0
 Resultados: 
-Trial: sumar 3 4 B , respuesta: letra, timestamp: 6.88243913651
-Trial: representar 4 4 A , respuesta: letra, timestamp: 10.0209050179
+representar 4 4 A letra 6.61267209053
+sumar 3 4 B numero 10.2448539734
 Resultados control objetivo operaciones: 
-Trial: sumar 3 4 B , respuesta: sumar, timestamp: 18.701210022
+representar 4 4 A sumar 21.4727420807
 Resultados control objetivo pares: 
-Trial: representar 4 4 A , respuesta: par, timestamp: 22.6923840046
+sumar 3 4 B impar 25.8005621433
 Resultados control subjetivo: 
-1
+7
+Sujeto 1
+Resultados: 
+representar 4 4 A numero 32.9050171375
+sumar 3 4 B letra 36.1763451099
+Resultados control objetivo operaciones: 
+representar 4 4 A representar 47.1444599628
+Resultados control objetivo pares: 
+sumar 3 4 B par 52.2363519669
+Resultados control subjetivo: 
+7
+Sujeto 2
+Resultados: 
+representar 4 4 A
+sumar 3 4 B
+Resultados control objetivo operaciones: 
+representar 4 4 A
+Resultados control objetivo pares: 
+sumar 3 4 B
+Resultados control subjetivo: 
+5

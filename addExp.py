@@ -118,8 +118,9 @@ def rutina_experimentos():
 			sujeto += 1
 		elif key == "escape":
 			break
-	analizador.analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
+	analizador.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
 		control_objetivo_pares_por_sujeto);
+	#analizador.analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
 
 if __name__ == '__main__':
 	rutina_experimentos()
