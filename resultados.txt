@@ -1,46 +1,22 @@
 Sujeto 0
 Resultados: 
-sumar 4 2 C letra 46.3766658306
-representar 2 3 5 numero 30.3086578846
-representar 4 3 A letra 53.0086839199
-representar 2 5 1 numero 49.760974884
-representar 3 1 2 numero 10.6489608288
-sumar 1 1 5 numero 56.192898035
-sumar 4 1 B letra 40.0771098137
-representar 3 3 B letra 69.0009908676
-sumar 5 5 4 numero 20.3648049831
-sumar 5 4 B letra 13.8259320259
-sumar 5 3 C letra 36.9410710335
-representar 5 2 C letra 59.2963039875
-representar 2 2 3 numero 62.5687708855
-sumar 4 1 2 numero 26.9325778484
-sumar 2 4 6 numero 17.012873888
-representar 2 3 5 numero 65.9136819839
-sumar 1 5 D letra 23.5724568367
-representar 4 2 C letra 72.3453218937
-sumar 1 4 5 numero 43.2613170147
-representar 5 1 C letra 33.4369449615
+representar 3 4 C letra 25.4073240757
+sumar 5 2 1 letra 13.6474041939
+sumar 2 1 A letra 19.4474670887
+representar 4 3 A letra 8.05553007126
+sumar 1 5 D letra 5.10370016098
+representar 3 2 4 letra 16.4953830242
+representar 1 5 6 letra 10.8476681709
+sumar 2 3 5 letra 22.4712560177
 Resultados control objetivo operaciones: 
-sumar 4 1 B sumar 95.8054549694
-representar 2 3 5 sumar 110.280835867
-sumar 1 5 D sumar 89.9243049622
-sumar 5 5 4 sumar 98.7071459293
-representar 3 1 2 representar 92.9009399414
-sumar 4 1 2 sumar 104.488149881
-sumar 2 4 6 representar 107.384327888
-sumar 5 4 B sumar 101.616691828
-sumar 5 3 C sumar 113.200664043
-representar 5 1 C representar 116.096441984
+representar 1 5 6 sumar 38.5589110851
+sumar 1 5 D sumar 41.1107981205
+sumar 5 2 1 sumar 46.2627379894
+representar 4 3 A sumar 43.6707570553
 Resultados control objetivo pares: 
-sumar 1 1 5 impar 123.704859972
-representar 5 2 C par 135.340528011
-representar 2 5 1 impar 129.724784851
-representar 3 3 B par 144.196177006
-representar 2 2 3 impar 132.612193823
-sumar 1 4 5 par 138.228050947
-representar 4 2 C par 151.40532589
-sumar 4 2 C par 141.243964911
-representar 4 3 A par 126.655956984
-representar 2 3 5 impar 147.156400919
+sumar 2 3 5 par 54.3266410828
+representar 3 2 4 par 56.8625621796
+representar 3 4 C par 59.4545769691
+sumar 2 1 A par 62.0385761261
 Resultados control subjetivo: 
 2

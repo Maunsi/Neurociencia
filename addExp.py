@@ -6,7 +6,10 @@ import random
 import control
 import analizador
 import analizador_csv
+import math
 from trial import Trial
+
+refresh_rate = 60.31
 
 def agradecimiento(ventana, nombre_imagen):
 	imagen = visual.ImageStim(ventana, image=nombre_imagen)
@@ -36,16 +39,28 @@ def generar_textos_mascaras(ventana):
 
 	return centro, mascara, mascara_post_prime, mascara_flanker_left, mascara_flanker_right
 
-
 def draw(ventana, estimulos, time=0):
-	for estimulo in estimulos:
-		estimulo.draw()
-	ventana.flip()
-	core.wait(time)
+	if time == 0: #El caso del waitKeys
+		for estimulo in estimulos:
+			estimulo.draw()
+		ventana.flip()
+		return
 
+	frames = time * refresh_rate
+	if frames < 2:
+		frames = 2
+	print frames
+	print math.ceil(frames)
+	for frame in range(int(frames)):
+		for estimulo in estimulos:
+			estimulo.draw()
+		ventana.flip()
+	#core.wait(time)
 
 def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras):
 	tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2]
+	#1000ms, 80ms, 30ms, 80ms, 100ms, 30ms, 1200ms
+	#Asumo refresh rate de 60hz
 
 	centro = mascaras[0]
 	mascara = mascaras[1]
@@ -78,6 +93,7 @@ def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, masc
 
 #Para el control objetivo deberiamos refactorizar esta funcion y reutilizarla
 def experimento(ventana, estimulos, mascaras):
+	
 	random.shuffle(estimulos)
 	respuestas_por_prueba = {} #Diccionario que tiene para cada prueba sus respuestas
 
@@ -85,8 +101,8 @@ def experimento(ventana, estimulos, mascaras):
 		# prepara target, flankers y primers
 		text_prime, text_left, text_right, text_res = estimulo.generate_stimuli(ventana)
 		dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras)
-		tiempo_respuesta = core.Clock()
-		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=tiempo_respuesta)
+		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=True)
+		ventana.flip()
 	#diccionario de prueba->tupla de respuesta
 	return respuestas_por_prueba
 
