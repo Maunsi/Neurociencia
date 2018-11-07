@@ -23,18 +23,6 @@ class Trial():
 
     def is_rep_trial(self):
         return self.prime == "representar"
-
-    def get_prime(self):
-        return self.prime
-
-    def get_left(self):
-        return self.left
-
-    def get_right(self):
-        return self.right
-
-    def get_res(self):
-        return self.res
         
     def __eq__(self, other):
         """Overrides the default implementation""" 
