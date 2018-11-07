@@ -65,9 +65,26 @@ def leer_resultados():
 			derecho = int(row["derecho"])
 			res = row["res"]
 			trial = Trial(operacion, izquierdo, derecho, res)
-			respuesta = row["respuesta"]
-			timestamp = float(row["t"])
-			pruebas_y_resultados_por_sujeto.get(sujeto, {})[trial] = [(respuesta, timestamp)]
+			if row["respuesta"] == ''
+				pruebas_y_resultados_por_sujeto.get(sujeto, {})[trial] = None
+			else:
+				respuesta = row["respuesta"]
+				timestamp = float(row["t"])
+				pruebas_y_resultados_por_sujeto.get(sujeto, {})[trial] = [(respuesta, timestamp)]
+			if row["respuesta_co_operacion"] == ''
+				control_objetivo_operaciones_por_sujeto.get(sujeto, {})[trial] = None
+			else:
+				respuesta = row["respuesta_co_operacion"]
+				timestamp = float(row["t_co_operacion"])
+				control_objetivo_operaciones_por_sujeto.get(sujeto, {})[trial] = [(respuesta, timestamp)]
+			if row["respuesta_co_pares"] == ''
+				control_objetivo_pares_por_sujeto.get(sujeto, {})[trial] = None
+			else:
+				respuesta = row["respuesta_co_pares"]
+				timestamp = float(row["t_co_pares"])
+				control_objetivo_pares_por_sujeto.get(sujeto, {})[trial] = [(respuesta, timestamp)]
+			control_subjetivo_por_sujeto[sujeto] = row["control_subjetivo"] 
+		return pruebas_y_resultados_por_sujeto, control_subjetivo, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto
 
 
 
