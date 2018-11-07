@@ -3,8 +3,8 @@ from scipy import stats
 import matplotlib.pyplot as plt
 
 def analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto):
-	pruebas_y_resultados_por_sujeto = filtrar_mayores_a_cuatro(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto)
-	pruebas_y_resultados_por_sujeto = filtrar_pruebas_letra(pruebas_y_resultados_por_sujeto)
+	menores_a_cuatro = filtrar_mayores_a_cuatro(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto)
+	sin_letras_menores_a_cuatro = filtrar_pruebas_letra(menores_a_cuatro)
 	analisis_control_objetivo(control_objetivo_pares_por_sujeto, control_objetivo_operaciones_por_sujeto)
 	pass
 
@@ -170,7 +170,7 @@ def analisis_control_objetivo(control_objetivo_pares_por_sujeto, control_objetiv
 	# 	#falsas alarmas dividido todos los trials que tuvieron como prime representar
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
-		print "Sujeto: {}, Hits: {}, Falsas alarmas: {}, Correct Rejections {}".format(sujeto, hits, falsas_alarmas, correct_rejections)
+		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections)
 	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
 	plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
 	plt.title("Hits Misses Falsas alarmas Rechazos correctos")

@@ -5,6 +5,7 @@ from psychopy import visual, core, event
 import random
 import control
 import analizador
+import analizador_csv
 from trial import Trial
 
 def agradecimiento(ventana, nombre_imagen):
@@ -122,7 +123,10 @@ def rutina_experimentos():
 			sujeto += 1
 		elif key == "escape":
 			break
+	#Llamo a las dos escrituras de resultados por las dudas
 	analizador.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
+		control_objetivo_pares_por_sujeto);
+	analizador_csv.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
 		control_objetivo_pares_por_sujeto);
 	#analizador.analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
 
