@@ -79,14 +79,14 @@ def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, masc
 #Para el control objetivo deberiamos refactorizar esta funcion y reutilizarla
 def experimento(ventana, estimulos, mascaras):
 	random.shuffle(estimulos)
-
 	respuestas_por_prueba = {} #Diccionario que tiene para cada prueba sus respuestas
 
 	for estimulo in estimulos:
 		# prepara target, flankers y primers
 		text_prime, text_left, text_right, text_res = estimulo.generate_stimuli(ventana)
 		dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras)
-		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=True)
+		tiempo_respuesta = core.Clock()
+		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=tiempo_respuesta)
 	#diccionario de prueba->tupla de respuesta
 	return respuestas_por_prueba
 
