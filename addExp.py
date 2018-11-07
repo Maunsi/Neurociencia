@@ -47,8 +47,8 @@ def draw(ventana, estimulos, time=0):
 		return
 
 	frames = time * refresh_rate
-	if frames < 2:
-		frames = 2
+	if frames < 1:
+		frames = 1
 	print frames
 	print math.ceil(frames)
 	for frame in range(int(frames)):
@@ -93,7 +93,7 @@ def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, masc
 
 #Para el control objetivo deberiamos refactorizar esta funcion y reutilizarla
 def experimento(ventana, estimulos, mascaras):
-	
+	clock = core.Clock()
 	random.shuffle(estimulos)
 	respuestas_por_prueba = {} #Diccionario que tiene para cada prueba sus respuestas
 
@@ -101,7 +101,8 @@ def experimento(ventana, estimulos, mascaras):
 		# prepara target, flankers y primers
 		text_prime, text_left, text_right, text_res = estimulo.generate_stimuli(ventana)
 		dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras)
-		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=True)
+		clock.reset()
+		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=clock)
 		ventana.flip()
 	#diccionario de prueba->tupla de respuesta
 	return respuestas_por_prueba
@@ -121,7 +122,7 @@ def rutina_experimentos():
                                 si el símbolo que aparece en el centro de la pantalla es un número o una letra.\
 								\n * Presione L si es una letra \
 								\n * Presione A si es un número.\
-                                \n\nPresione ESPACIO para comenzar o ESC para cancelar.")
+                                \n\nPresione ESPACIO para comenzar.")
 	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
 	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
 	sujeto = 0
@@ -137,13 +138,11 @@ def rutina_experimentos():
 			control_objetivo_pares_por_sujeto[sujeto] = control_objetivo_pares
 			agradecimiento(ventana, "agradecimiento.png")
 			sujeto += 1
+			analizador.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
+			analizador_csv.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
 		elif key == "escape":
 			break
 	#Llamo a las dos escrituras de resultados por las dudas
-	analizador.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
-		control_objetivo_pares_por_sujeto);
-	analizador_csv.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, 
-		control_objetivo_pares_por_sujeto);
 	#analizador.analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
 
 if __name__ == '__main__':

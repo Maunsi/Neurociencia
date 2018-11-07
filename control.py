@@ -68,21 +68,21 @@ def control_objetivo(ventana, estimulos, mascaras):
     primera_mitad_estimulos = estimulos[:mitad]
     segunda_mitad_estimulos = estimulos[mitad:]
     primera_consigna =  visual.TextStim(win=ventana, text=u"Por favor, querido ser celestial nacido de la bondad misma:\
-                                la tarea consiste en identificar si en los siguientes trials aparecen las palabras SUMAR o REPRESENTAR.\
+                                la tarea consiste en identificar si en los siguientes trials aparecen las palabras REPRESENTAR o SUMAR.\
                                 \n\nPresione ESPACIO para continuar.")
     primera_consigna_bis = visual.TextStim(win=ventana, text=u"INSTRUCCIONES:\
-                                \n\t * Apretar L si la palabra es SUMAR.\
                                 \n\t * Apretar A si la palabra es REPRESENTAR.\
+								\n\t * Apretar L si la palabra es SUMAR.\
                                 \nSi no sabe, responda igual, aunque tenga que adivinar. No se estrese.\
                                 \n\nPresione ESPACIO para comenzar.")
     segunda_consigna =  visual.TextStim(win=ventana, text =u"Querida persona, durante la tarea, previamente a que apareciera el número o letra que usted\
                                 categorizaba, aparecían en cada trial dos números a ambos lados del punto de fijación.\
-                                En esta parte necesitamos que indique si el número que se ubica a la izquierda del punto de fijación, es par o impar.\
+                                En esta parte necesitamos que indique si el número que se ubica a la izquierda del punto de fijación, es impar o par.\
                                 Si no sabe, responda igual, aunque tenga que adivinar. No se estrese.\
                                 \n\nPresione ESPACIO para continuar.")
     segunda_consigna_bis = visual.TextStim(win=ventana, text=u"INSTRUCCIONES:\
-                                \n * Apretar L si el flanker es PAR.\
                                 \n * Apretar A si el flanker es IMPAR.\
+								\n * Apretar L si el flanker es PAR.\
                                 \n\nPresione ESPACIO para comenzar.")
     primera_consigna.draw()
     ventana.flip()
