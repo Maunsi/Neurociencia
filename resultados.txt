@@ -1,0 +1,22 @@
+Sujeto 0
+Resultados: 
+representar 3 4 C letra 25.4073240757
+sumar 5 2 1 letra 13.6474041939
+sumar 2 1 A letra 19.4474670887
+representar 4 3 A letra 8.05553007126
+sumar 1 5 D letra 5.10370016098
+representar 3 2 4 letra 16.4953830242
+representar 1 5 6 letra 10.8476681709
+sumar 2 3 5 letra 22.4712560177
+Resultados control objetivo operaciones: 
+representar 1 5 6 sumar 38.5589110851
+sumar 1 5 D sumar 41.1107981205
+sumar 5 2 1 sumar 46.2627379894
+representar 4 3 A sumar 43.6707570553
+Resultados control objetivo pares: 
+sumar 2 3 5 par 54.3266410828
+representar 3 2 4 par 56.8625621796
+representar 3 4 C par 59.4545769691
+sumar 2 1 A par 62.0385761261
+Resultados control subjetivo: 
+2

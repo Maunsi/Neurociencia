@@ -17,6 +17,24 @@ class Trial():
     
     def is_letter_trial(self):
         return self.res.isalpha()
+
+    def is_sum_trial(self):
+        return self.prime == "sumar"
+
+    def is_rep_trial(self):
+        return self.prime == "representar"
+
+    def get_prime(self):
+        return self.prime 
+
+    def get_left(self):
+        return self.left
+
+    def get_right(self):
+        return self.right
+
+    def get_res(self):
+        return self.res
         
     def __eq__(self, other):
         """Overrides the default implementation""" 
@@ -31,4 +49,4 @@ class Trial():
         return not self.__eq__(other)
 
     def __repr__(self):
-    	return "{} {} {} {} ".format(self.prime, self.left, self.right, self.res)
+    	return "{} {} {} {}".format(self.prime, self.left, self.right, self.res)

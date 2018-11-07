@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from psychopy import visual, event, core
 import addExp
 
@@ -39,16 +42,23 @@ def preguntar_prime(ventana, texto_inicial, texto_final):
 def control_subjetivo(ventana):
     """ Crea la ventana, presenta las instrucciones y escribe la respuesta en un archivo.
     """
-    pregunta_prime = "Humanoide, que tanto pudo identificar las palabras SUMAR o REPRESENTAR mientras realizaba los trials? \
-                  \nResponda en la siguiente escala, del 1 al 7. Siendo 1 \"no las identifique en ninguno de los trials.\" y 7 \"las identifique en todos los trials\"\
-                  .\n Si no lo hace sufrira las consecuencias."
-    prepararse = "Ahora preparese para la proxima pregunta."
+    pregunta_prime = u"Humanoide, ¿qué tanto pudo identificar las palabras SUMAR o REPRESENTAR mientras realizaba los trials? \
+                     \nResponda en la siguiente escala, con el teclado, del 1 al 7. Siendo: \
+                     \n1 - No las identifiqué en ninguno de los trials. \
+                     \n7 - Las identifiqué en todos los trials.\
+                     \n\n1\t\t2\t\t3\t\t4\t\t5\t\t6\t\t7"
+    prepararse = u"Siguiente pregunta..."
     respuesta_prime = preguntar_prime(ventana, pregunta_prime, prepararse)
 
-    pregunta_flankers = "Durante la tarea, previamente a que apareciera el numero o letra que usted categorizaba, aparecian en cada trial\
-    dos numeros a ambos lados del punto de fijacion. Que tanto pudo identificar estos numeros? \nResponda en la siguiente escala, del 1 al 7. \
-    Siendo 1 \"no los identifique en ninguno de los trials.\" y 7 \"los identifique en todos los trials\""
-    agradecimiento = "Muchas gracias por su colaboracion. Activen el rayo vaporizador.. PZZZZZTTT"
+    pregunta_flankers = u"Durante la tarea, previamente a que apareciera el número o letra que usted categorizaba, \
+                          aparecían en cada trial\
+                          dos números a ambos lados del punto de fijación,\
+                          ¿qué tanto pudo identificar estos números? \
+                          \nResponda en la siguiente escala, con el teclado, del 1 al 7. Siendo: \
+                          \n1 - No las identifiqué en ninguno de los trials. \
+                          \n7 - Las identifiqué en todos los trials.\
+                          \n\n1\t\t2\t\t3\t\t4\t\t5\t\t6\t\t7"
+    agradecimiento = u"Muchas gracias por su colaboración. Activen el rayo vaporizador.. PZZZZZTTT"
     respuesta_flankers = preguntar_prime(ventana, pregunta_flankers, agradecimiento)
 
     return max(int(respuesta_prime), int(respuesta_flankers))
@@ -57,24 +67,23 @@ def control_objetivo(ventana, estimulos, mascaras):
     mitad = len(estimulos)//2
     primera_mitad_estimulos = estimulos[:mitad]
     segunda_mitad_estimulos = estimulos[mitad:]
-    primera_consigna =  visual.TextStim(win=ventana, text="Por favor, querido ser celestial nacido de la bondad misma:\
-                                    \nla siguiente tarea consiste en identificar si en los siguientes trials aparecen las palabras\
-                                    SUMAR o REPRESENTAR.\
-                                    \nPresione ESPACIO para continuar.")
-    primera_consigna_bis = visual.TextStim(win=ventana, text="Instrucciones:\
-                                    \n\tApretar L si la palabra es SUMAR.\
-                                    \n\tApretar A si la palabra es REPRESENTAR.\
-                                    \nSi no sabe, responda igual, por mas de que tenga que adivinar. No se estrese.\
-                                    \n\nPresione ESPACIO para comenzar.")
-    segunda_consigna =  visual.TextStim(win=ventana, text ="Querida persona, buena como el agua mineral, \
-    durante la tarea, previamente a que apareciera el numero o letra que usted categorizaba, aparecian en cada trial\
-    dos numeros a ambos lados del punto de fijacion. En esta parte necesitamos que indique\
-    si el numero que se ubica a la izquierda del punto de fijacion, es par o impar. Si no sabe, responda igual, por mas de que tenga que adivinar. No se estrese.\"\
-    \n\nPresione ESPACIO para continuar.")
-    segunda_consigna_bis = visual.TextStim(win=ventana, text="Instrucciones:\
-                        \nApretar L si el flanker es PAR.\
-                        \nApretar A si el flanker es IMPAR.\
-                        \n\nPresione ESPACIO para comenzar.")
+    primera_consigna =  visual.TextStim(win=ventana, text=u"Por favor, querido ser celestial nacido de la bondad misma:\
+                                la tarea consiste en identificar si en los siguientes trials aparecen las palabras SUMAR o REPRESENTAR.\
+                                \n\nPresione ESPACIO para continuar.")
+    primera_consigna_bis = visual.TextStim(win=ventana, text=u"INSTRUCCIONES:\
+                                \n\t * Apretar L si la palabra es SUMAR.\
+                                \n\t * Apretar A si la palabra es REPRESENTAR.\
+                                \nSi no sabe, responda igual, aunque tenga que adivinar. No se estrese.\
+                                \n\nPresione ESPACIO para comenzar.")
+    segunda_consigna =  visual.TextStim(win=ventana, text =u"Querida persona, durante la tarea, previamente a que apareciera el número o letra que usted\
+                                categorizaba, aparecían en cada trial dos números a ambos lados del punto de fijación.\
+                                En esta parte necesitamos que indique si el número que se ubica a la izquierda del punto de fijación, es par o impar.\
+                                Si no sabe, responda igual, aunque tenga que adivinar. No se estrese.\
+                                \n\nPresione ESPACIO para continuar.")
+    segunda_consigna_bis = visual.TextStim(win=ventana, text=u"INSTRUCCIONES:\
+                                \n * Apretar L si el flanker es PAR.\
+                                \n * Apretar A si el flanker es IMPAR.\
+                                \n\nPresione ESPACIO para comenzar.")
     primera_consigna.draw()
     ventana.flip()
     event.waitKeys(keyList=["space"])
