@@ -7,6 +7,7 @@ import control
 import analizador
 import analizador_csv
 import math
+import time
 from trial import Trial
 
 refresh_rate = 60.31
@@ -39,54 +40,38 @@ def generar_textos_mascaras(ventana):
 
 	return centro, mascara, mascara_post_prime, mascara_flanker_left, mascara_flanker_right
 
-def draw(ventana, estimulos, time=0):
-	if time == 0: #El caso del waitKeys
+def draw(ventana, estimulos, frames=1):
+	for frame in range(frames):
 		for estimulo in estimulos:
 			estimulo.draw()
 		ventana.flip()
-		return
-
-	frames = time * refresh_rate
-	if frames < 1:
-		frames = 1
-	print frames
-	print math.ceil(frames)
-	for frame in range(int(frames)):
-		for estimulo in estimulos:
-			estimulo.draw()
-		ventana.flip()
-	#core.wait(time)
 
 def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras):
 	tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2]
-	#1000ms, 80ms, 30ms, 80ms, 100ms, 30ms, 1200ms
 	#Asumo refresh rate de 60hz
+	frames = [61, 5, 2, 5, 6, 2, 72] #Corresponden a tiempo*60frames/segundo
 
-	centro = mascaras[0]
-	mascara = mascaras[1]
-	mascara_post_prime = mascaras[2]
-	mascara_izquierda = mascaras[3]
-	mascara_derecha = mascaras[4]
+	[centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha] = mascaras
 
-	draw(ventana, {centro}, tiempos[0])
+	draw(ventana, {centro}, frames[0])
 
 	# mostrar mascara
-	draw(ventana, {mascara}, tiempos[1])
+	draw(ventana, {mascara}, frames[1])
 	
 	# mostrar primer de acuerdo a lo especificado en pairAndResInputs.txt
-	draw(ventana, {text_prime}, tiempos[2])
+	draw(ventana, {text_prime}, frames[2])
 	
 	# mostrar mascara
-	draw(ventana, {mascara_post_prime}, tiempos[3])
+	draw(ventana, {mascara_post_prime}, frames[3])
 		
 	# mostrar mascara para los flankers junto con el centro
-	draw(ventana, {centro, mascara_izquierda, mascara_derecha}, tiempos[4])
+	draw(ventana, {centro, mascara_izquierda, mascara_derecha}, frames[4])
 		
 	#Mostrar pares y el centro
-	draw(ventana, {centro, text_left, text_right}, tiempos[5])
+	draw(ventana, {centro, text_left, text_right}, frames[5])
 
 	# mostrar mascara para los flankers y el centro
-	draw(ventana, {centro, mascara_izquierda, mascara_derecha}, tiempos[6])
+	draw(ventana, {centro, mascara_izquierda, mascara_derecha}, frames[6])
 
 	# Mostrar resultado y mascaras para los flankers
 	draw(ventana, {text_res, mascara_izquierda, mascara_derecha})
@@ -102,7 +87,7 @@ def experimento(ventana, estimulos, mascaras):
 		text_prime, text_left, text_right, text_res = estimulo.generate_stimuli(ventana)
 		dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras)
 		clock.reset()
-		respuestas_por_prueba[estimulo] = event.waitKeys(maxWait=2, keyList=['a', 'l'], timeStamped=clock)
+		respuestas_por_prueba[estimulo] = event.waitKeys(keyList=['a', 'l'], timeStamped=clock)
 		ventana.flip()
 	#diccionario de prueba->tupla de respuesta
 	return respuestas_por_prueba
@@ -112,10 +97,10 @@ def rutina_experimentos():
 	ventana.flip()
 	ventana.mouseVisible = False
 	estimulos = read_input_file()
-	pruebas_y_resultados_por_sujeto = {}
-	control_subjetivo_por_sujeto = {}
-	control_objetivo_operaciones_por_sujeto = {}
-	control_objetivo_pares_por_sujeto = {}
+	pruebas_y_resultados = {}
+	control_subjetivo = 0
+	control_objetivo_operaciones= {}
+	control_objetivo_pares= {}
 	consigna_experimento = visual.TextStim(win=ventana, text=u"Bienvenido al mejor experimento de Neurociencia Cognitiva.\
 								\n\nINSTRUCCIONES:\
 								\nLa tarea consiste en categorizar lo más rápido y preciso que pueda,\
@@ -126,24 +111,18 @@ def rutina_experimentos():
 	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
 	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
 	sujeto = 0
-	while True:
-		consigna_experimento.draw()
-		ventana.flip()
-		key = event.waitKeys(keyList=["space", "escape"])[0]
-		if key == "space":
-			pruebas_y_resultados_por_sujeto[sujeto] = experimento(ventana, estimulos, mascaras)
-			control_subjetivo_por_sujeto[sujeto] = control.control_subjetivo(ventana)
-			control_objetivo_operaciones, control_objetivo_pares = control.control_objetivo(ventana, estimulos, mascaras)
-			control_objetivo_operaciones_por_sujeto[sujeto] = control_objetivo_operaciones
-			control_objetivo_pares_por_sujeto[sujeto] = control_objetivo_pares
-			agradecimiento(ventana, "agradecimiento.png")
-			sujeto += 1
-			analizador.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
-			analizador_csv.escribir_resultados(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
-		elif key == "escape":
-			break
-	#Llamo a las dos escrituras de resultados por las dudas
-	#analizador.analizar(pruebas_y_resultados_por_sujeto, control_subjetivo_por_sujeto, control_objetivo_operaciones_por_sujeto, control_objetivo_pares_por_sujeto);
+	consigna_experimento.draw()
+	ventana.flip()
+	key = event.waitKeys(keyList=["space", "escape"])[0]
+	if key == "space":
+		pruebas_y_resultados = experimento(ventana, estimulos, mascaras)
+		control_subjetivo = control.control_subjetivo(ventana)
+		control_objetivo_operaciones, control_objetivo_pares = control.control_objetivo(ventana, estimulos, mascaras)
+		agradecimiento(ventana, "agradecimiento.png")
+		#analizador.escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetivo_operaciones, control_objetivo_pares);
+		analizador_csv.escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetivo_operaciones, control_objetivo_pares);
+	elif key == "escape":
+		break
 
 if __name__ == '__main__':
 	rutina_experimentos()
