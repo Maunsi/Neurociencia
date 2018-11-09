@@ -10,8 +10,6 @@ import math
 import time
 from trial import Trial
 
-refresh_rate = 60.31
-
 def agradecimiento(ventana, nombre_imagen):
 	imagen = visual.ImageStim(ventana, image=nombre_imagen)
 	imagen.draw()
@@ -32,11 +30,11 @@ def read_input_file():
 
 def generar_textos_mascaras(ventana):
 	# centro (fixation point en el paper)
-	centro = visual.TextStim(win=ventana, name='centro', text='| |', units='cm', pos=(0,0))
-	mascara = visual.TextStim(win=ventana, name='mascara', text='MWMWMWMWMWM', units='cm', pos=(0, 0))
-	mascara_post_prime = visual.TextStim(win=ventana, name='mascara', text='$$$$$$$$$$$', units='cm', pos=(0, 0))
-	mascara_flanker_left = visual.TextStim(win=ventana, name='mascara_flanker_left', text='##', units='cm', pos=(-3.929, 0))
-	mascara_flanker_right = visual.TextStim(win=ventana, name='mascara_flanker_right', text='##', units='cm', pos=(3.929, 0))
+	centro = visual.TextStim(win=ventana, text='| |', units='cm', pos=(0,0))
+	mascara = visual.TextStim(win=ventana, text='MWMWMWMWMWM', units='cm', pos=(0, 0))
+	mascara_post_prime = visual.TextStim(win=ventana, text='$$$$$$$$$$$', units='cm', pos=(0, 0))
+	mascara_flanker_left = visual.TextStim(win=ventana, text='##', units='cm', pos=(-3.929, 0))
+	mascara_flanker_right = visual.TextStim(win=ventana, text='##', units='cm', pos=(3.929, 0))
 
 	return centro, mascara, mascara_post_prime, mascara_flanker_left, mascara_flanker_right
 
@@ -47,7 +45,6 @@ def draw(ventana, estimulos, frames=1):
 		ventana.flip()
 
 def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras):
-	tiempos = [1, 0.08, 0.03, 0.08, 0.1, 0.03, 1.2]
 	#Asumo refresh rate de 60hz
 	frames = [61, 5, 2, 5, 6, 2, 72] #Corresponden a tiempo*60frames/segundo
 
@@ -76,7 +73,6 @@ def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, masc
 	# Mostrar resultado y mascaras para los flankers
 	draw(ventana, {text_res, mascara_izquierda, mascara_derecha})
 
-#Para el control objetivo deberiamos refactorizar esta funcion y reutilizarla
 def experimento(ventana, estimulos, mascaras):
 	clock = core.Clock()
 	random.shuffle(estimulos)
@@ -87,7 +83,8 @@ def experimento(ventana, estimulos, mascaras):
 		text_prime, text_left, text_right, text_res = estimulo.generate_stimuli(ventana)
 		dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, mascaras)
 		clock.reset()
-		respuestas_por_prueba[estimulo] = event.waitKeys(keyList=['a', 'l'], timeStamped=clock)
+		respuestas_por_prueba[estimulo] = event.waitKeys(keyList=['a', 'l'], 
+												timeStamped=clock)
 		ventana.flip()
 	#diccionario de prueba->tupla de respuesta
 	return respuestas_por_prueba
@@ -120,10 +117,9 @@ def rutina_experimentos():
 		control_objetivo_operaciones, control_objetivo_pares = control.control_objetivo(ventana, estimulos, mascaras)
 		agradecimiento(ventana, "agradecimiento.png")
 		#analizador.escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetivo_operaciones, control_objetivo_pares);
-		analizador_csv.escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetivo_operaciones, control_objetivo_pares);
-	elif key == "escape":
-		break
-
+		analizador_csv.escribir_resultados(pruebas_y_resultados, 
+		control_subjetivo, control_objetivo_operaciones, control_objetivo_pares)
+	
 if __name__ == '__main__':
 	rutina_experimentos()
 

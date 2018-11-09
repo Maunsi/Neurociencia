@@ -9,13 +9,27 @@ def escribir_resultado(resultado, nombre_archivo, modo):
         recibe: resultado(lista de strings)-> lo que va a guardar en un archivo.
         ------  
                 nombre_archivo(string) -> nombre del archivo que va a contener los datos.
-                
+
+
+
+
                 modo(string) -> "r", "w" o "a".
     """
     archivo = open(nombre_archivo, modo)
     archivo.write(resultado + "\n") 
     archivo.close()
-    
+
+def dibujar_consigna(ventana, consigna):
+    consigna.draw()
+    ventana.flip()
+
+def procesar_teclas(ventana, teclas):
+    tecla = event.waitKeys(keyList=teclas)[0]
+    if tecla == "escape":
+        ventana.close()
+
+    return tecla
+
 def preguntar_prime(ventana, texto_inicial, texto_final):
     """ Le pregunta al usuario que tanto vio el prime.
         recibe: ventana(Window) -> para saber donde escribir el texto.
@@ -27,14 +41,13 @@ def preguntar_prime(ventana, texto_inicial, texto_final):
          devuelve: respuestas(string) ->  dada por el usuario al apretar la tecla.
          --------- 
     """
+    teclas = ['1', '2', '3', '4', '5', '6', '7', 'escape']
     pregunta = visual.TextStim(win=ventana, text=texto_inicial)
     agradecimiento = visual.TextStim(win=ventana, text=texto_final)
-    pregunta.draw()
-    ventana.flip()
-    # lo bueno de waitKeys es que, por defecto, hace un clear events y revisa que la tecla apretada sea la correcta.
-    respuesta = "".join(event.waitKeys(keyList=['1', '2', '3', '4', '5', '6', '7']))
-    agradecimiento.draw()
-    ventana.flip()
+
+    dibujar_consigna(ventana, pregunta)
+    respuesta = str(procesar_teclas(ventana, teclas))
+    dibujar_consigna(ventana, agradecimiento)
     core.wait(1)
     
     return respuesta
@@ -64,6 +77,7 @@ def control_subjetivo(ventana):
     return max(int(respuesta_prime), int(respuesta_flankers))
 
 def control_objetivo(ventana, estimulos, mascaras):
+    teclas = ["space", "escape"]
     mitad = len(estimulos)//2
     primera_mitad_estimulos = estimulos[:mitad]
     segunda_mitad_estimulos = estimulos[mitad:]
@@ -84,19 +98,15 @@ def control_objetivo(ventana, estimulos, mascaras):
                                 \n * Apretar A si el flanker es IMPAR.\
 								\n * Apretar L si el flanker es PAR.\
                                 \n\nPresione ESPACIO para comenzar.")
-    primera_consigna.draw()
-    ventana.flip()
-    event.waitKeys(keyList=["space"])
-    primera_consigna_bis.draw()
-    ventana.flip()
-    event.waitKeys(keyList=["space"])
+    dibujar_consigna(ventana, primera_consigna)
+    procesar_teclas(ventana, teclas)
+    dibujar_consigna(ventana, primera_consigna_bis)
+    procesar_teclas(ventana, teclas)
     control_objetivo_operaciones = addExp.experimento(ventana, primera_mitad_estimulos, mascaras)
-    segunda_consigna.draw()
-    ventana.flip()
-    event.waitKeys(keyList=["space"])
-    segunda_consigna_bis.draw()
-    ventana.flip()
-    event.waitKeys(keyList=["space"])
+    dibujar_consigna(ventana, segunda_consigna)
+    procesar_teclas(ventana, teclas)
+    dibujar_consigna(ventana, segunda_consigna_bis)
+    procesar_teclas(ventana, teclas)
     control_objetivo_pares = addExp.experimento(ventana, segunda_mitad_estimulos, mascaras)
 
     return control_objetivo_operaciones, control_objetivo_pares
