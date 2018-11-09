@@ -35,7 +35,7 @@ def escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetiv
 			t_co_pares = ''
 			respuestas_co_pares = control_objetivo_pares.get(prueba, None)
 			if respuestas_co_pares is not None:
-				respuesta_co_pares = 'par' if respuestas_co_pares[0][0] == 'l' else 'representar'
+				respuesta_co_pares = 'par' if respuestas_co_pares[0][0] == 'l' else 'impar'
 				t_co_pares = str(respuestas_co_pares[0][1])
 
 			writer.writerow({'sujeto': 0, 'operacion': operacion, 'izquierdo': izquierdo, 'derecho': derecho, 'res': res, 'respuesta': 
@@ -62,6 +62,8 @@ def leer_resultados():
 			sujeto_final +=1
 
 		df["Sujeto"].replace(mapa, inplace=True)
+		#Esto lo hago porque tuve un error al escribir los archivos!!
+		df["Control_pares"].replace({'par':'par', 'representar':'impar'}, inplace=True)
 		df_final = df_final.append(df, ignore_index=True)
 
 	print "Sujetos del dataframe final: {}".format(df_final["Sujeto"].unique())
