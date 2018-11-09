@@ -100,16 +100,22 @@ def filtrar_pruebas_letra(df):
 def analisis_control_objetivo_operacion(df):
 	# L = SUMAR, A = REPRESENTAR.
 	d_primas = []
-	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales= 0, 0, 0, 0
+	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
 	sujetos = df.Sujeto.unique()
 	print sujetos
 	for sujeto in sujetos:
-		hits, misses, falsas_alarmas, correct_rejections = 0, 0, 0, 0
+		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
 		#Para cada row de este sujeto
 		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
 			operacion = row["Operacion"]
 			respuesta = row["Control_operaciones"]
-			if  operacion == 'sumar' and respuesta == 'sumar': # Si la prueba fue sumar y respondi sumar es un hit
+			hubo_estimulo = not pandas.isna(operacion) #Revisar, me esta dando muchos nones
+			hubo_respuesta = not pandas.isna(respuesta)
+			if not hubo_estimulo:
+				continue
+			if hubo_estimulo and not hubo_respuesta:
+				nones +=1
+			elif  operacion == 'sumar' and respuesta == 'sumar': # Si la prueba fue sumar y respondi sumar es un hit
 				hits += 1
 			elif operacion == 'sumar' and respuesta == 'representar': # Si la prueba fue sumar y respondi representar es un miss
 				misses +=1
@@ -121,13 +127,14 @@ def analisis_control_objetivo_operacion(df):
 		misses_totales += misses
 		falsas_alarmas_totales += falsas_alarmas
 		correct_rejections_totales += correct_rejections
-		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections)
+		nones_totales += nones
+		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
 	# 	probabilidad_hit = hits/(hits + misses) #hits dividido todos los trials que tuvieron como prime sumar
 	# 	probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) 
 	# 	#falsas alarmas dividido todos los trials que tuvieron como prime representar
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
-	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales)
+	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones_totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
 	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
 	plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
 	plt.title("Hits Misses Falsas alarmas Rechazos correctos")
@@ -148,9 +155,14 @@ def analisis_control_objetivo_pares(df):
 		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
 		#Para cada row de este sujeto
 		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
-			par = row["Flanker_izquierdo"] % 2 == 0
+			izq = row["Flanker_izquierdo"]
+			par = izq % 2 == 0
 			respuesta = row["Control_pares"]
-			if respuesta is None:
+			hubo_estimulo = not pandas.isna(izq)
+			hubo_respuesta = not pandas.isna(respuesta)
+			if not hubo_estimulo:
+				continue
+			if hubo_estimulo and not hubo_respuesta:
 				nones +=1
 			elif  par and respuesta == 'par': # Si el flanker izquierdo era par y respondi par es un hit
 				hits += 1
