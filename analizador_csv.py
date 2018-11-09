@@ -54,7 +54,6 @@ def leer_resultados():
 		sujetos = df["Sujeto"].unique()
 		print "Sujetos del archivo {}, {}".format(filepath, sujetos)
 		mapa = {}
-
 		for sujeto in sujetos:
 			mapa[sujeto] = sujeto_final
 			print "Sujeto" + str(sujeto)
@@ -71,9 +70,9 @@ def leer_resultados():
 
 def analizar(df):
 	df_menores_a_cuatro = filtrar_mayores_a_cuatro(df)
-	df_nuevo = filtrar_pruebas_letra(df_menores_a_cuatro)
-	analisis_control_objetivo_operacion(df_nuevo)
-	analisis_control_objetivo_pares(df_nuevo)
+	#df_nuevo = filtrar_pruebas_letra(df_menores_a_cuatro)
+	analisis_control_objetivo_operacion(df_menores_a_cuatro)
+	analisis_control_objetivo_pares(df_menores_a_cuatro)
 
 def filtrar_mayores_a_cuatro(df):
 	sujetos_antes = len(df["Sujeto"].unique())
@@ -84,12 +83,9 @@ def filtrar_mayores_a_cuatro(df):
 	mean = df["Control_subjetivo"].mean()
 	print "Cantidad de sujetxs desechados: {}".format(sujetos_despues-sujetos_antes)
 	print "Promedio de visibilidad entre los sujetxs restantes: {}".format(mean)
-	print "Resultados sin control subjetivo mayor o igual a cuatro"
-	#with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
-	#	print(df)
 	return df
 
-#Hay una mejor manera seguro
+#PROBLEMA: ELIMINAR LAS PRUEBAS CON LETRAS TAMBIEN LAS ELIMINARIA DEL CONTROL OBJETIVO!!
 def filtrar_pruebas_letra(df):
 	print "Resultados sin trials con letras"
 	df = df[np.logical_not(df.Target.str.isalpha())]
@@ -102,20 +98,14 @@ def analisis_control_objetivo_operacion(df):
 	d_primas = []
 	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
 	sujetos = df.Sujeto.unique()
-	print sujetos
+	print "Resultados control objetivo operacion"
 	for sujeto in sujetos:
 		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
 		#Para cada row de este sujeto
 		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
 			operacion = row["Operacion"]
 			respuesta = row["Control_operaciones"]
-			hubo_estimulo = not pandas.isna(operacion) #Revisar, me esta dando muchos nones
-			hubo_respuesta = not pandas.isna(respuesta)
-			if not hubo_estimulo:
-				continue
-			if hubo_estimulo and not hubo_respuesta:
-				nones +=1
-			elif  operacion == 'sumar' and respuesta == 'sumar': # Si la prueba fue sumar y respondi sumar es un hit
+			if  operacion == 'sumar' and respuesta == 'sumar': # Si la prueba fue sumar y respondi sumar es un hit
 				hits += 1
 			elif operacion == 'sumar' and respuesta == 'representar': # Si la prueba fue sumar y respondi representar es un miss
 				misses +=1
@@ -123,11 +113,16 @@ def analisis_control_objetivo_operacion(df):
 				falsas_alarmas +=1
 			elif operacion == 'representar' and respuesta == 'representar': # Si la prueba fue representar y respondi representar es una correct rejection
 				correct_rejections +=1
+		#La cantidad de nones es el total de estimulos menos todas las otras clasificaciones. Es decir, la mitad de los estimulos (filas)
+		estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
+		print estimulos_control_objetivo
+		nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
 		hits_totales += hits
 		misses_totales += misses
 		falsas_alarmas_totales += falsas_alarmas
 		correct_rejections_totales += correct_rejections
 		nones_totales += nones
+
 		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
 	# 	probabilidad_hit = hits/(hits + misses) #hits dividido todos los trials que tuvieron como prime sumar
 	# 	probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) 
@@ -135,9 +130,9 @@ def analisis_control_objetivo_operacion(df):
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones_totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
-	plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
-	plt.title("Hits Misses Falsas alarmas Rechazos correctos")
+	plt.bar([0,1,2,3,4], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
+	plt.xticks([0,1,2,3,4], ["Hits", "Misses", "False alarms", "Correct rejections", "Nones"])
+	plt.title("Control objetivo operaciones")
 	plt.show()
 	# #Tengo la lista de d's
 	# t = stats.ttest_1samp(d_primas, 0)
@@ -147,10 +142,9 @@ def analisis_control_objetivo_pares(df):
 	#with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
 	#	print(df)
 	#PARA LO DE NONES HABRIA QUE SELECCIONAR SOLO LAS FILAS DONDE HAY FLANKER IZQUIERDO. 
-	#PARECE QUE CUANDO ERA IMPAR QUIZAS LA GENTE RESPONDIO MUY TEMPRANO?
 	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
 	sujetos = df.Sujeto.unique()
-	print sujetos
+	print "Resultados control objetivo pares"
 	for sujeto in sujetos:
 		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
 		#Para cada row de este sujeto
@@ -158,13 +152,7 @@ def analisis_control_objetivo_pares(df):
 			izq = row["Flanker_izquierdo"]
 			par = izq % 2 == 0
 			respuesta = row["Control_pares"]
-			hubo_estimulo = not pandas.isna(izq)
-			hubo_respuesta = not pandas.isna(respuesta)
-			if not hubo_estimulo:
-				continue
-			if hubo_estimulo and not hubo_respuesta:
-				nones +=1
-			elif  par and respuesta == 'par': # Si el flanker izquierdo era par y respondi par es un hit
+			if  par and respuesta == 'par': # Si el flanker izquierdo era par y respondi par es un hit
 				hits += 1
 			elif par and respuesta == 'impar': # Si el flanker izquierdo era par y respondi impar es un miss
 				misses +=1
@@ -172,6 +160,10 @@ def analisis_control_objetivo_pares(df):
 				falsas_alarmas +=1
 			elif not(par) and respuesta == 'impar': # Si el flanker izquierdo era impar y respondi impar es una correct rejection
 				correct_rejections +=1
+		#La cantidad de nones es el total de estimulos menos todas las otras clasificaciones. Es decir, la mitad de los estimulos (filas)
+		estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
+		print estimulos_control_objetivo
+		nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
 		hits_totales += hits
 		misses_totales += misses
 		falsas_alarmas_totales += falsas_alarmas
@@ -184,9 +176,9 @@ def analisis_control_objetivo_pares(df):
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
-	plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
-	plt.title("Hits Misses Falsas alarmas Rechazos correctos")
+	plt.bar([0,1,2,3,4], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
+	plt.xticks([0,1,2,3,4], ["Hits", "Misses", "False alarms", "Correct rejections", "Nones"])
+	plt.title("Control objetivo pares")
 	plt.show()
 	# #Tengo la lista de d's
 	# t = stats.ttest_1samp(d_primas, 0)
