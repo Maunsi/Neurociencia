@@ -130,8 +130,8 @@ def analisis_control_objetivo_operacion(df):
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones_totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	plt.bar([0,1,2,3,4], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
-	plt.xticks([0,1,2,3,4], ["Hits", "Misses", "False alarms", "Correct rejections", "Nones"])
+	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
+	plt.xticks([0,1,2,3], ["Hits", "Misses", "False alarms", "Correct rejections", "Nones"])
 	plt.title("Control objetivo operaciones")
 	plt.show()
 	# #Tengo la lista de d's
@@ -176,9 +176,9 @@ def analisis_control_objetivo_pares(df):
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	plt.bar([0,1,2,3,4], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
-	plt.xticks([0,1,2,3,4], ["Hits", "Misses", "False alarms", "Correct rejections", "Nones"])
-	plt.title("Control objetivo pares")
+	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
+	plt.xticks([0,1,2,3], ["Hits", "Misses", "False alarms", "Correct rejections"])
+	plt.title("Hits Misses Falsas alarmas Rechazos correctos")
 	plt.show()
 	# #Tengo la lista de d's
 	# t = stats.ttest_1samp(d_primas, 0)
