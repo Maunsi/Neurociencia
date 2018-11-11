@@ -45,10 +45,10 @@ def escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetiv
 def leer_resultados():
 	#Tengo que iterar por todos los archivos de resultados
 	sujeto_final = 0
-	df_final = pandas.DataFrame(columns=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta (ms)", 
+	df_final = pandas.DataFrame(columns=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta", 
 			"Control_operaciones", "Tiempo_control_operacion", "Control_pares", "Tiempo_control_pares", "Control_subjetivo"])
 	for filepath in glob.iglob('Resultados/*.csv'):
-		df = pandas.read_csv(filepath, names=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta (ms)", 
+		df = pandas.read_csv(filepath, names=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta", 
 			"Control_operaciones", "Tiempo_control_operacion", "Control_pares", "Tiempo_control_pares", "Control_subjetivo"])
 		#consigo los unique, itero para todos los valores para reemplazar los sujetos correctamente
 		sujetos = df["Sujeto"].unique()
@@ -110,6 +110,8 @@ def analisis_control_objetivo_operacion(df):
 		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
 			operacion = row["Operacion"]
 			respuesta = row["Control_operaciones"]
+			estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
+			nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
 			if  operacion == 'sumar' and respuesta == 'sumar': # Si la prueba fue sumar y respondi sumar es un hit
 				hits += 1
 			elif operacion == 'sumar' and respuesta == 'representar': # Si la prueba fue sumar y respondi representar es un miss
@@ -130,10 +132,10 @@ def analisis_control_objetivo_operacion(df):
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones_totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	# plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
-	# plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
-	# plt.title("Hits Misses Falsas alarmas Rechazos correctos")
-	# plt.show()
+	plt.bar([0,1,2,3,4], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
+	plt.xticks([0,1,2,3,4], ["Hits", "Misses", "False alarms", "Correct rejections", "Nones"])
+	plt.title("Control operaciones")
+	plt.show()
 	# #Tengo la lista de d's
 	# t = stats.ttest_1samp(d_primas, 0)
 	# print "T-test result: {}".format(t)
@@ -153,6 +155,8 @@ def analisis_control_objetivo_pares(df):
 			izq = row["Flanker_izquierdo"]
 			par = izq % 2 == 0
 			respuesta = row["Control_pares"]
+			estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
+			nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
 			if  par and respuesta == 'par': # Si el flanker izquierdo era par y respondi par es un hit
 				hits += 1
 			elif par and respuesta == 'impar': # Si el flanker izquierdo era par y respondi impar es un miss
@@ -161,22 +165,24 @@ def analisis_control_objetivo_pares(df):
 				falsas_alarmas +=1
 			elif not(par) and respuesta == 'impar': # Si el flanker izquierdo era impar y respondi impar es una correct rejection
 				correct_rejections +=1
+
 		hits_totales += hits
 		misses_totales += misses
 		falsas_alarmas_totales += falsas_alarmas
 		correct_rejections_totales += correct_rejections
 		nones_totales += nones
 		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
+
 	# 	probabilidad_hit = hits/(hits + misses) #hits dividido todos los trials que tuvieron como prime sumar
 	# 	probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) 
 	# 	#falsas alarmas dividido todos los trials que tuvieron como prime representar
 	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
 	# 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	# plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
-	# plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
-	# plt.title("Hits Misses Falsas alarmas Rechazos correctos")
-	# plt.show()
+	plt.bar([0,1,2,3,4], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales])  # arguments are passed to np.histogram
+	plt.xticks([0,1,2,3,4], ["Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales"])
+	plt.title("Control objetivo pares")
+	plt.show()
 	# #Tengo la lista de d's
 	# t = stats.ttest_1samp(d_primas, 0)
 	# print "T-test result: {}".format(t)
@@ -186,37 +192,24 @@ def analisis_control_objetivo_pares(df):
 def analisis_tiempos(df):
 	#COINCIDE SIGNIFICA QUE EL TARGET ES IGUAL A LA SUMA DE LOS FLANKERS
 
-	df_numero = df.loc[df["Target"].isin(["1","2","3","4","5","6"]) & (df["Tiempo_de_respuesta (ms)"] > 0.3) & (df["Tiempo_de_respuesta (ms)"] < 1)]
-	df["Target"] = pandas.to_numeric(df_numero["Target"], errors='ignore')
+	df_numero = df.loc[df["Target"].isin(["1","2","3","4","5","6"]) & (df["Tiempo_de_respuesta"] > 0.3) & (df["Tiempo_de_respuesta"] < 1)]
+	df_numero["Target"] = pandas.to_numeric(df_numero["Target"], errors='ignore')
 
-	print df_numero
-	print "*******************************************"
-	print type(df_numero["Flanker_izquierdo"][0])
-	print type(df_numero["Target"][0])
-
-	df_numero_coincide = df_numero.loc[df["Target"] == (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
-	print df_numero_coincide
-	print "*******************************************"
+	df_numero_coincide = df_numero.loc[df_numero["Target"] == (df_numero["Flanker_izquierdo"] + df_numero["Flanker_derecho"])]
 	df_numero_coincide_suma = df_numero_coincide.loc[df["Operacion"] == 'sumar']
-	print df_numero_coincide_suma
-	print "*******************************************"
 	df_numero_coincide_representar = df_numero_coincide.loc[df["Operacion"] == 'representar']
-	print df_numero_coincide_representar
-	print "*******************************************"
+
+	#VOY A PONER TODOS LOS PROMEDIOS EN MILISEGUNDOS
+	promedio_suma_coincide = df_numero_coincide_suma["Tiempo_de_respuesta"].mean()*1000
+	promedio_representar_coincide = df_numero_coincide_representar["Tiempo_de_respuesta"].mean()*1000
 
 
-	promedio_suma_coincide = df_numero_coincide_suma.mean()
-	print promedio_suma_coincide
-	print "*******************************************"
-	promedio_representar_coincide = df_numero_coincide_representar.mean()
-
-
-	df_numero_no_coincide = df_numero.loc[df["Target"] != df["Flanker_izquierdo"] + df["Flanker_derecho"]]
+	df_numero_no_coincide = df_numero.loc[df["Target"] != (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
 	df_numero_no_coincide_suma = df_numero_no_coincide.loc[df["Operacion"] == 'sumar']
 	df_numero_no_coincide_representar = df_numero_no_coincide.loc[df["Operacion"] == 'representar']
 	
-	promedio_suma_no_coincide = df_numero_no_coincide_suma.mean()
-	promedio_representar_no_coincide = df_numero_no_coincide_representar.mean()
+	promedio_suma_no_coincide = df_numero_no_coincide_suma["Tiempo_de_respuesta"].mean()*1000
+	promedio_representar_no_coincide = df_numero_no_coincide_representar["Tiempo_de_respuesta"].mean()*1000
 	
 	plt.bar([0,1,2,3], [promedio_suma_coincide, promedio_suma_no_coincide, promedio_representar_coincide, promedio_representar_no_coincide])  # arguments are passed to np.histogram
 	plt.xticks([0,1,2,3], ["SumarC", "SumarN", "RepresentaC", "RepresentarN"])
