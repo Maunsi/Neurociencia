@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import csv
 import pandas
 from trial import Trial
@@ -52,7 +54,6 @@ def leer_resultados():
 			"Control_operaciones", "Tiempo_control_operacion", "Control_pares", "Tiempo_control_pares", "Control_subjetivo"])
 		#consigo los unique, itero para todos los valores para reemplazar los sujetos correctamente
 		sujetos = df["Sujeto"].unique()
-		print "Sujetos del archivo {}, {}".format(filepath, sujetos)
 		mapa = {}
 		for sujeto in sujetos:
 			mapa[sujeto] = sujeto_final
@@ -64,16 +65,17 @@ def leer_resultados():
 		#Esto lo hago porque tuve un error al escribir los archivos!!
 		df["Control_pares"].replace({'par':'par', 'representar':'impar'}, inplace=True)
 		df_final = df_final.append(df, ignore_index=True)
-
-	print "Sujetos del dataframe final: {}".format(df_final["Sujeto"].unique())
 	return df_final
 
 def analizar(df):
 	df_menores_a_cuatro = filtrar_mayores_a_cuatro(df)
-	#df_nuevo = filtrar_pruebas_letra(df_menores_a_cuatro)
-	analisis_control_objetivo_operacion(df_menores_a_cuatro)
-	analisis_control_objetivo_pares(df_menores_a_cuatro)
-	analisis_tiempos(df_menores_a_cuatro)
+	#analisis_control_objetivo_operacion(df_menores_a_cuatro)
+	#analisis_control_objetivo_pares(df_menores_a_cuatro)
+	print "Control objetivo operaciones: "
+	funcion_identidad = lambda x:x
+	analisis_control_objetivo(df_menores_a_cuatro, "Operacion", funcion_identidad, "Control_operaciones", 'sumar', 'representar', 'sumar', 'representar')
+	funcion_par = lambda x: x%2
+	analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, "Control_pares", 0, 1, 'par', 'impar')
 
 def filtrar_mayores_a_cuatro(df):
 	sujetos_antes = len(df["Sujeto"].unique())
@@ -86,42 +88,27 @@ def filtrar_mayores_a_cuatro(df):
 	print "Promedio de visibilidad entre los sujetxs restantes: {}".format(mean)
 	return df
 
-#PROBLEMA: ELIMINAR LAS PRUEBAS CON LETRAS TAMBIEN LAS ELIMINARIA DEL CONTROL OBJETIVO!!
-def filtrar_pruebas_letra(df):
-	print "Resultados sin trials con letras"
-	df = df[np.logical_not(df.Target.str.isalpha())]
-	#with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
-	#	print(df)
-	return df
-
-def analisis_control_objetivo_operacion(df):
-	# L = SUMAR, A = REPRESENTAR.
+def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_respuesta, senial_estimulo, ruido_estimulo, senial_respuesta, ruido_respuesta):
 	d_primas = []
 	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
 	sujetos = df.Sujeto.unique()
-	print "Resultados control objetivo operacion"
 	for sujeto in sujetos:
-		#PRUEBO FILTRAR EL SUJETO 5 PORQUE LA RE CAGO
-		#if sujeto == 5:
-		#	continue
 		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
 		#Para cada row de este sujeto
 		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
-			operacion = row["Operacion"]
-			respuesta = row["Control_operaciones"]
-			estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
-			nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
-			if  operacion == 'sumar' and respuesta == 'sumar': # Si la prueba fue sumar y respondi sumar es un hit
+			estimulo = row[columna_estimulo]
+			estimulo_mod = funcion_estimulo(estimulo)
+			respuesta = row[columna_respuesta]
+			#La cantidad de nones es el total de estimulos menos todas las otras clasificaciones. Es decir, la mitad de los estimulos (filas)
+			if estimulo_mod == senial_estimulo and respuesta == senial_respuesta:
 				hits += 1
-			elif operacion == 'sumar' and respuesta == 'representar': # Si la prueba fue sumar y respondi representar es un miss
+			elif estimulo_mod == senial_estimulo and respuesta == ruido_respuesta:
 				misses +=1
-			elif operacion == 'representar' and respuesta == 'sumar': # Si la prueba fue representar y respondi sumar es una falsa alarma
+			elif estimulo_mod == ruido_estimulo and respuesta == senial_respuesta:
 				falsas_alarmas +=1
-			elif operacion == 'representar' and respuesta == 'representar': # Si la prueba fue representar y respondi representar es una correct rejection
+			elif estimulo_mod == ruido_estimulo and respuesta == ruido_respuesta: 
 				correct_rejections +=1
-		#La cantidad de nones es el total de estimulos menos todas las otras clasificaciones. Es decir, la mitad de los estimulos (filas)
 		estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
-		print estimulos_control_objetivo
 		nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
 		hits_totales += hits
 		misses_totales += misses
@@ -130,65 +117,19 @@ def analisis_control_objetivo_operacion(df):
 		nones_totales += nones
 		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
 		draw_bar_plot(5, [hits, misses, falsas_alarmas, correct_rejections, nones], 
-			("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control operaciones " + str(sujeto))
-	# 	probabilidad_hit = hits/(hits + misses) #hits dividido todos los trials que tuvieron como prime sumar
-	# 	probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) 
-	# 	#falsas alarmas dividido todos los trials que tuvieron como prime representar
-	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
-	# 	d_primas.append(d_prima)
-	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones_totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	draw_bar_plot(5, [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales],
-	 ("Hits", "Misses", "False alarms", "Correct rejections", "Nones"), "Control operaciones")
-	# #Tengo la lista de d's
-	# t = stats.ttest_1samp(d_primas, 0)
-	# print "T-test result: {}".format(t)
-
-def analisis_control_objetivo_pares(df):
-	#with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
-	#	print(df)
-	#PARA LO DE NONES HABRIA QUE SELECCIONAR SOLO LAS FILAS DONDE HAY FLANKER IZQUIERDO. 
-	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
-	sujetos = df.Sujeto.unique()
-	print "Resultados control objetivo pares"
-	for sujeto in sujetos:
-		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
-		#Para cada row de este sujeto
-		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
-			izq = row["Flanker_izquierdo"]
-			par = izq % 2 == 0
-			respuesta = row["Control_pares"]
-			#La cantidad de nones es el total de estimulos menos todas las otras clasificaciones. Es decir, la mitad de los estimulos (filas)
-			estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
-			nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
-			if  par and respuesta == 'par': # Si el flanker izquierdo era par y respondi par es un hit
-				hits += 1
-			elif par and respuesta == 'impar': # Si el flanker izquierdo era par y respondi impar es un miss
-				misses +=1
-			elif not(par) and respuesta == 'par': # Si el flanker izquierdo era impar y respondi par es una falsa alarma
-				falsas_alarmas +=1
-			elif not(par) and respuesta == 'impar': # Si el flanker izquierdo era impar y respondi impar es una correct rejection
-				correct_rejections +=1
-		hits_totales += hits
-		misses_totales += misses
-		falsas_alarmas_totales += falsas_alarmas
-		correct_rejections_totales += correct_rejections
-		nones_totales += nones
-		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
-		draw_bar_plot(5, [hits, misses, falsas_alarmas, correct_rejections, nones], 
-			("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control pares " + str(sujeto))
-	# 	probabilidad_hit = hits/(hits + misses) #hits dividido todos los trials que tuvieron como prime sumar
-	# 	probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) 
-	# 	#falsas alarmas dividido todos los trials que tuvieron como prime representar
-	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
-	# 	d_primas.append(d_prima)
+			("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control " + str(sujeto))
+	 	if hits+misses ==0 or falsas_alarmas + correct_rejections == 0: #Temporario para saltear el error de 0
+	 		continue
+	 	probabilidad_hit = float(hits)/(hits + misses) #hits dividido todos los trials donde el estimulo era senial
+		probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) #falsas alarmas dividido todos los trials que tuvieron estimulo ruido
+		d_prima = stats.norm.ppf(probabilidad_hit) - stats.norm.ppf(probabilidad_falsa_alarma)
+	 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
 
 	draw_bar_plot(5, [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales],
-		("Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales", "Nones totales"), "Control objetivo pares")
-	# #Tengo la lista de d's
-	# t = stats.ttest_1samp(d_primas, 0)
-	# print "T-test result: {}".format(t)
-
+		("Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales", "Nones totales"), "Control")
+	#Tengo la lista de d's
+	t = stats.ttest_1samp(d_primas, 0)
 
 def analisis_tiempos(df):
 	#COINCIDE SIGNIFICA QUE EL TARGET ES IGUAL A LA SUMA DE LOS FLANKERS
@@ -234,10 +175,8 @@ def analisis_tiempos(df):
 	desviacion_no_coincide = (desviacion_suma_no_coincide, desviacion_representar_no_coincide)
 
 	fig, ax = plt.subplots()
-
 	index = np.arange(n_groups)
 	bar_width = 0.35
-
 	opacity = 0.6
 
 	coincide = ax.bar(index, promedios_coincide, bar_width,
@@ -259,8 +198,6 @@ def analisis_tiempos(df):
 
 	fig.tight_layout()
 	plt.show()
-
-
 
 
 def draw_bar_plot(n, variables, etiquetas, titulo, desviaciones=None):
