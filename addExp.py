@@ -118,7 +118,6 @@ def rutina_experimentos(modo_inputs):
                                 \n\nPresione ESPACIO para comenzar.")
 	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
 	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
-	sujeto = 0
 	consigna_experimento.draw()
 	ventana.flip()
 	key = event.waitKeys(keyList=["space", "escape"])[0]

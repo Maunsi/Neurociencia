@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import csv
 import pandas
 from trial import Trial
@@ -45,16 +47,14 @@ def escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetiv
 def leer_resultados():
 	#Tengo que iterar por todos los archivos de resultados
 	sujeto_final = 0
-	df_final = pandas.DataFrame(columns=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta (ms)", 
+	df_final = pandas.DataFrame(columns=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta", 
 			"Control_operaciones", "Tiempo_control_operacion", "Control_pares", "Tiempo_control_pares", "Control_subjetivo"])
 	for filepath in glob.iglob('Resultados/*.csv'):
-		df = pandas.read_csv(filepath, names=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta (ms)", 
+		df = pandas.read_csv(filepath, names=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta", 
 			"Control_operaciones", "Tiempo_control_operacion", "Control_pares", "Tiempo_control_pares", "Control_subjetivo"])
 		#consigo los unique, itero para todos los valores para reemplazar los sujetos correctamente
 		sujetos = df["Sujeto"].unique()
-		print "Sujetos del archivo {}, {}".format(filepath, sujetos)
 		mapa = {}
-
 		for sujeto in sujetos:
 			mapa[sujeto] = sujeto_final
 			print "Sujeto" + str(sujeto)
@@ -65,15 +65,20 @@ def leer_resultados():
 		#Esto lo hago porque tuve un error al escribir los archivos!!
 		df["Control_pares"].replace({'par':'par', 'representar':'impar'}, inplace=True)
 		df_final = df_final.append(df, ignore_index=True)
-
-	print "Sujetos del dataframe final: {}".format(df_final["Sujeto"].unique())
 	return df_final
 
 def analizar(df):
 	df_menores_a_cuatro = filtrar_mayores_a_cuatro(df)
-	df_nuevo = filtrar_pruebas_letra(df_menores_a_cuatro)
-	analisis_control_objetivo_operacion(df_nuevo)
-	analisis_control_objetivo_pares(df_nuevo)
+	#analisis_control_objetivo_operacion(df_menores_a_cuatro)
+	#analisis_control_objetivo_pares(df_menores_a_cuatro)
+	print "Control objetivo operaciones: "
+	funcion_identidad = lambda x:x
+	t_statistic_operaciones, p_value_operaciones = analisis_control_objetivo(df_menores_a_cuatro, "Operacion", funcion_identidad, "Control_operaciones", 'sumar', 'representar', 'sumar', 'representar')
+	print "T-test operaciones: {} p valor: {}".format(t_statistic_operaciones, p_value_operaciones)
+	funcion_par = lambda x: x%2
+	print "Control objetivo pares: "
+	t_statistic_pares, p_value_pares = analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, "Control_pares", 0, 1, 'par', 'impar')
+	print "T-test pares: {} p valor: {}".format(t_statistic_pares, p_value_pares)
 
 def filtrar_mayores_a_cuatro(df):
 	sujetos_antes = len(df["Sujeto"].unique())
@@ -84,113 +89,128 @@ def filtrar_mayores_a_cuatro(df):
 	mean = df["Control_subjetivo"].mean()
 	print "Cantidad de sujetxs desechados: {}".format(sujetos_despues-sujetos_antes)
 	print "Promedio de visibilidad entre los sujetxs restantes: {}".format(mean)
-	print "Resultados sin control subjetivo mayor o igual a cuatro"
-	#with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
-	#	print(df)
 	return df
 
-#Hay una mejor manera seguro
-def filtrar_pruebas_letra(df):
-	print "Resultados sin trials con letras"
-	df = df[np.logical_not(df.Target.str.isalpha())]
-	#with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
-	#	print(df)
-	return df
-
-def analisis_control_objetivo_operacion(df):
-	# L = SUMAR, A = REPRESENTAR.
+def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_respuesta, senial_estimulo, ruido_estimulo, senial_respuesta, ruido_respuesta):
 	d_primas = []
 	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
 	sujetos = df.Sujeto.unique()
-	print sujetos
 	for sujeto in sujetos:
 		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
 		#Para cada row de este sujeto
 		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
-			operacion = row["Operacion"]
-			respuesta = row["Control_operaciones"]
-			hubo_estimulo = not pandas.isna(operacion) #Revisar, me esta dando muchos nones
-			hubo_respuesta = not pandas.isna(respuesta)
-			if not hubo_estimulo:
-				continue
-			if hubo_estimulo and not hubo_respuesta:
-				nones +=1
-			elif  operacion == 'sumar' and respuesta == 'sumar': # Si la prueba fue sumar y respondi sumar es un hit
+			estimulo = row[columna_estimulo]
+			estimulo_mod = funcion_estimulo(estimulo)
+			respuesta = row[columna_respuesta]
+			#La cantidad de nones es el total de estimulos menos todas las otras clasificaciones. Es decir, la mitad de los estimulos (filas)
+			if estimulo_mod == senial_estimulo and respuesta == senial_respuesta:
 				hits += 1
-			elif operacion == 'sumar' and respuesta == 'representar': # Si la prueba fue sumar y respondi representar es un miss
+			elif estimulo_mod == senial_estimulo and respuesta == ruido_respuesta:
 				misses +=1
-			elif operacion == 'representar' and respuesta == 'sumar': # Si la prueba fue representar y respondi sumar es una falsa alarma
+			elif estimulo_mod == ruido_estimulo and respuesta == senial_respuesta:
 				falsas_alarmas +=1
-			elif operacion == 'representar' and respuesta == 'representar': # Si la prueba fue representar y respondi representar es una correct rejection
+			elif estimulo_mod == ruido_estimulo and respuesta == ruido_respuesta: 
 				correct_rejections +=1
+		estimulos_control_objetivo = df.loc[df["Sujeto"] == sujeto].shape[0]//2
+		nones = estimulos_control_objetivo - hits - misses - falsas_alarmas - correct_rejections
 		hits_totales += hits
 		misses_totales += misses
 		falsas_alarmas_totales += falsas_alarmas
 		correct_rejections_totales += correct_rejections
 		nones_totales += nones
 		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
-	# 	probabilidad_hit = hits/(hits + misses) #hits dividido todos los trials que tuvieron como prime sumar
-	# 	probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) 
-	# 	#falsas alarmas dividido todos los trials que tuvieron como prime representar
-	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
-	# 	d_primas.append(d_prima)
-	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones_totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
-	plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
-	plt.title("Hits Misses Falsas alarmas Rechazos correctos")
-	plt.show()
-	# #Tengo la lista de d's
-	# t = stats.ttest_1samp(d_primas, 0)
-	# print "T-test result: {}".format(t)
-
-def analisis_control_objetivo_pares(df):
-	#with pandas.option_context('display.max_rows', None, 'display.max_columns', None):
-	#	print(df)
-	#PARA LO DE NONES HABRIA QUE SELECCIONAR SOLO LAS FILAS DONDE HAY FLANKER IZQUIERDO. 
-	#PARECE QUE CUANDO ERA IMPAR QUIZAS LA GENTE RESPONDIO MUY TEMPRANO?
-	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
-	sujetos = df.Sujeto.unique()
-	print sujetos
-	for sujeto in sujetos:
-		hits, misses, falsas_alarmas, correct_rejections, nones = 0, 0, 0, 0, 0
-		#Para cada row de este sujeto
-		for index, row in df.loc[df["Sujeto"] == sujeto].iterrows():
-			izq = row["Flanker_izquierdo"]
-			par = izq % 2 == 0
-			respuesta = row["Control_pares"]
-			hubo_estimulo = not pandas.isna(izq)
-			hubo_respuesta = not pandas.isna(respuesta)
-			if not hubo_estimulo:
-				continue
-			if hubo_estimulo and not hubo_respuesta:
-				nones +=1
-			elif  par and respuesta == 'par': # Si el flanker izquierdo era par y respondi par es un hit
-				hits += 1
-			elif par and respuesta == 'impar': # Si el flanker izquierdo era par y respondi impar es un miss
-				misses +=1
-			elif not(par) and respuesta == 'par': # Si el flanker izquierdo era impar y respondi par es una falsa alarma
-				falsas_alarmas +=1
-			elif not(par) and respuesta == 'impar': # Si el flanker izquierdo era impar y respondi impar es una correct rejection
-				correct_rejections +=1
-		hits_totales += hits
-		misses_totales += misses
-		falsas_alarmas_totales += falsas_alarmas
-		correct_rejections_totales += correct_rejections
-		nones_totales += nones
-		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
-	# 	probabilidad_hit = hits/(hits + misses) #hits dividido todos los trials que tuvieron como prime sumar
-	# 	probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) 
-	# 	#falsas alarmas dividido todos los trials que tuvieron como prime representar
-	# 	d_prima = 1/promedio_hits - 1/promedio_falsas_alarmas
-	# 	d_primas.append(d_prima)
+		draw_bar_plot(5, [hits, misses, falsas_alarmas, correct_rejections, nones], 
+			("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control " + str(sujeto))
+	 	#ACA LE HICE LA LOG LINEAR TRANSFORM. SI LO SACO HAY QUE AGREGAR CAST A FLOAT PARA FORZAR LA DIVISION CON COMA
+	 	probabilidad_hit = (hits+0.5)/(hits + misses+1) #hits dividido todos los trials donde el estimulo era senial
+		probabilidad_falsa_alarma = (falsas_alarmas+0.5)/(falsas_alarmas + correct_rejections+1) #falsas alarmas dividido todos los trials que tuvieron estimulo ruido
+		print "Probabilidad hit {}".format(probabilidad_hit)
+		print "Probabilidad falsa alarma {}".format(probabilidad_falsa_alarma)
+		d_prima = stats.norm.ppf(probabilidad_hit) - stats.norm.ppf(probabilidad_falsa_alarma)
+	 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
-	plt.bar([0,1,2,3], [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales])  # arguments are passed to np.histogram
-	plt.xticks([0,1,2,3], ["hits", "misses", "false alarms", "correct rejections"])
-	plt.title("Hits Misses Falsas alarmas Rechazos correctos")
+
+	draw_bar_plot(5, [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales],
+		("Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales", "Nones totales"), "Control")
+	#Tengo la lista de d's
+	t_statistic, p_value = stats.ttest_1samp(d_primas, 0)
+	return t_statistic, p_value
+
+
+def analisis_tiempos(df):
+	#COINCIDE SIGNIFICA QUE EL TARGET ES IGUAL A LA SUMA DE LOS FLANKERS
+	#Por si queremos pasarlo a milisegundos
+	#df["Tiempo_de_respuesta"] = df["Tiempo_de_respuesta"]*1000
+
+	df_numero = df.loc[df["Target"].isin(["1","2","3","4","5","6"]) & (df["Tiempo_de_respuesta"] > 0.3) & (df["Tiempo_de_respuesta"] < 1)]
+	#Que pasa si multiplico la de tiempo de respuesta por 1000
+	df_numero["Target"] = pandas.to_numeric(df_numero["Target"], errors='ignore')
+
+	df_numero_coincide = df_numero.loc[df_numero["Target"] == (df_numero["Flanker_izquierdo"] + df_numero["Flanker_derecho"])]
+	df_numero_coincide_suma = df_numero_coincide.loc[df["Operacion"] == 'sumar']
+	df_numero_coincide_representar = df_numero_coincide.loc[df["Operacion"] == 'representar']
+
+	df_numero_no_coincide = df_numero.loc[df["Target"] != (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
+	df_numero_no_coincide_suma = df_numero_no_coincide.loc[df["Operacion"] == 'sumar']
+	df_numero_no_coincide_representar = df_numero_no_coincide.loc[df["Operacion"] == 'representar']
+
+	promedio_suma_coincide = df_numero_coincide_suma["Tiempo_de_respuesta"].mean()
+	desviacion_suma_coincide = df_numero_coincide_suma["Tiempo_de_respuesta"].std()
+	
+	promedio_representar_coincide = df_numero_coincide_representar["Tiempo_de_respuesta"].mean()
+	desviacion_representar_coincide = df_numero_coincide_representar["Tiempo_de_respuesta"].std()
+
+	promedio_suma_no_coincide = df_numero_no_coincide_suma["Tiempo_de_respuesta"].mean()
+	desviacion_suma_no_coincide = df_numero_no_coincide_suma["Tiempo_de_respuesta"].std()
+
+	promedio_representar_no_coincide = df_numero_no_coincide_representar["Tiempo_de_respuesta"].mean()
+	desviacion_representar_no_coincide = df_numero_no_coincide_representar["Tiempo_de_respuesta"].std()
+	
+	promedios = (promedio_suma_coincide, promedio_suma_no_coincide, promedio_representar_coincide, promedio_representar_no_coincide)
+	desviaciones = (desviacion_suma_coincide, desviacion_suma_no_coincide, desviacion_representar_coincide, desviacion_representar_no_coincide)
+	etiquetas = ("SumarC", "SumarN", "RepresentaC", "RepresentarN")
+	titulo = "Resultados tiempo"
+	draw_bar_plot(4, promedios, etiquetas, titulo, desviaciones)
+
+	n_groups = 2
+
+	promedios_coincide = (promedio_suma_coincide, promedio_representar_coincide)
+	desviacion_coincide = (desviacion_suma_coincide,desviacion_representar_coincide)
+
+	promedios_no_coincide = (promedio_suma_no_coincide, promedio_representar_no_coincide)
+	desviacion_no_coincide = (desviacion_suma_no_coincide, desviacion_representar_no_coincide)
+
+	fig, ax = plt.subplots()
+	index = np.arange(n_groups)
+	bar_width = 0.35
+	opacity = 0.6
+
+	coincide = ax.bar(index, promedios_coincide, bar_width,
+	                alpha=opacity, color='b',
+	                yerr=desviacion_coincide,
+	                label='Concide')
+
+	no_coincide = ax.bar(index + bar_width, promedios_no_coincide, bar_width,
+	                alpha=opacity, color='r',
+	                yerr=desviacion_no_coincide,
+	                label='No coincide')
+
+	ax.set_xlabel('Operacion')
+	ax.set_ylabel('Tiempos de respuesta')
+	ax.set_title('Tiempos de respuesta por operacion y tipo de target')
+	ax.set_xticks(index + bar_width / 2)
+	ax.set_xticklabels(('Sumar', 'Representar'))
+	ax.legend()
+
+	fig.tight_layout()
 	plt.show()
-	# #Tengo la lista de d's
-	# t = stats.ttest_1samp(d_primas, 0)
-	# print "T-test result: {}".format(t)
+
+
+def draw_bar_plot(n, variables, etiquetas, titulo, desviaciones=None):
+	plt.bar(np.arange(n), variables, yerr=desviaciones)
+	plt.xticks(np.arange(n), etiquetas)
+	plt.title(titulo)
+	plt.show()
 
 if __name__ == '__main__':
 	df = leer_resultados()
