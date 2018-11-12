@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from psychopy import visual, event, core
-import addExp
+import addExp, sys
 
 def escribir_resultado(resultado, nombre_archivo, modo):
     """ Guarda la respuesta en un archivo de texto.
@@ -26,7 +26,7 @@ def dibujar_consigna(ventana, consigna):
 def procesar_teclas(ventana, teclas):
     tecla = event.waitKeys(keyList=teclas)[0]
     if tecla == "escape":
-        ventana.close()
+        sys.exit()
 
     return tecla
 

@@ -8,7 +8,9 @@ import analizador
 import analizador_csv
 import math
 import time
+import sys
 from trial import Trial
+
 
 def agradecimiento(ventana, nombre_imagen):
 	imagen = visual.ImageStim(ventana, image=nombre_imagen)
@@ -16,16 +18,25 @@ def agradecimiento(ventana, nombre_imagen):
 	ventana.flip()
 	core.wait(3)
 
-def read_input_file():
+def read_input_file(modo_inputs):
 	input_list = []
-	input_file = open("pairAndResInputs.txt", "r")
-	for line in input_file:
-		# rstrip() para evitar que algun \n moleste
-		prime, pairString, res = line.rstrip().split(" ")
-		left, right = pairString.split(",")
-		trial = Trial(prime, int(left), int(right), res) #res es una string porque a veces es una latra
-		input_list.append(trial)
-	input_file.close()
+	if modo_inputs == "prueba":
+		input_file = open("pairAndResInputs.txt", "r")
+	if modo_inputs == "biblia":
+		input_file = open("pairAndResInputsBIBLIA.txt", "r")
+	try:
+		for line in input_file:
+			# rstrip() para evitar que algun \n moleste
+			prime, pairString, res = line.rstrip().split(" ")
+			left, right = pairString.split(",")
+			trial = Trial(prime, int(left), int(right), res) #res es una string porque a veces es una latra
+			input_list.append(trial)
+		input_file.close()
+	except UnboundLocalError as error:
+		print(error)
+		print("\nRecordar debes: es prueba o biblia. Escribir bien debes.\n")
+		sys.exit()
+
 	return input_list
 
 def generar_textos_mascaras(ventana):
@@ -89,11 +100,11 @@ def experimento(ventana, estimulos, mascaras):
 	#diccionario de prueba->tupla de respuesta
 	return respuestas_por_prueba
 
-def rutina_experimentos():
+def rutina_experimentos(modo_inputs):
 	ventana = visual.Window(fullscr=True, monitor="addExp", color=(0,0,0))
 	ventana.flip()
 	ventana.mouseVisible = False
-	estimulos = read_input_file()
+	estimulos = read_input_file(modo_inputs)
 	pruebas_y_resultados = {}
 	control_subjetivo = 0
 	control_objetivo_operaciones= {}
@@ -121,5 +132,10 @@ def rutina_experimentos():
 		control_subjetivo, control_objetivo_operaciones, control_objetivo_pares)
 	
 if __name__ == '__main__':
-	rutina_experimentos()
-
+	try:
+		rutina_experimentos(sys.argv[1])
+	except IndexError as error:
+		print(error)
+		print("Pasarle la opción de lectura al programa debes.\
+			\npython addExp.py prueba \
+			\npython addExp.py biblia\n")
