@@ -73,9 +73,12 @@ def analizar(df):
 	#analisis_control_objetivo_pares(df_menores_a_cuatro)
 	print "Control objetivo operaciones: "
 	funcion_identidad = lambda x:x
-	analisis_control_objetivo(df_menores_a_cuatro, "Operacion", funcion_identidad, "Control_operaciones", 'sumar', 'representar', 'sumar', 'representar')
+	t_statistic_operaciones, p_value_operaciones = analisis_control_objetivo(df_menores_a_cuatro, "Operacion", funcion_identidad, "Control_operaciones", 'sumar', 'representar', 'sumar', 'representar')
+	print "T-test operaciones: {} p valor: {}".format(t_statistic_operaciones, p_value_operaciones)
 	funcion_par = lambda x: x%2
-	analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, "Control_pares", 0, 1, 'par', 'impar')
+	print "Control objetivo pares: "
+	t_statistic_pares, p_value_pares = analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, "Control_pares", 0, 1, 'par', 'impar')
+	print "T-test pares: {} p valor: {}".format(t_statistic_pares, p_value_pares)
 
 def filtrar_mayores_a_cuatro(df):
 	sujetos_antes = len(df["Sujeto"].unique())
@@ -118,10 +121,11 @@ def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_re
 		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
 		draw_bar_plot(5, [hits, misses, falsas_alarmas, correct_rejections, nones], 
 			("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control " + str(sujeto))
-	 	if hits+misses ==0 or falsas_alarmas + correct_rejections == 0: #Temporario para saltear el error de 0
-	 		continue
-	 	probabilidad_hit = float(hits)/(hits + misses) #hits dividido todos los trials donde el estimulo era senial
-		probabilidad_falsa_alarma =  falsas_alarmas/(falsas_alarmas + correct_rejections) #falsas alarmas dividido todos los trials que tuvieron estimulo ruido
+	 	#ACA LE HICE LA LOG LINEAR TRANSFORM. SI LO SACO HAY QUE AGREGAR CAST A FLOAT PARA FORZAR LA DIVISION CON COMA
+	 	probabilidad_hit = (hits+0.5)/(hits + misses+1) #hits dividido todos los trials donde el estimulo era senial
+		probabilidad_falsa_alarma = (falsas_alarmas+0.5)/(falsas_alarmas + correct_rejections+1) #falsas alarmas dividido todos los trials que tuvieron estimulo ruido
+		print "Probabilidad hit {}".format(probabilidad_hit)
+		print "Probabilidad falsa alarma {}".format(probabilidad_falsa_alarma)
 		d_prima = stats.norm.ppf(probabilidad_hit) - stats.norm.ppf(probabilidad_falsa_alarma)
 	 	d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
@@ -129,7 +133,9 @@ def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_re
 	draw_bar_plot(5, [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales],
 		("Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales", "Nones totales"), "Control")
 	#Tengo la lista de d's
-	t = stats.ttest_1samp(d_primas, 0)
+	t_statistic, p_value = stats.ttest_1samp(d_primas, 0)
+	return t_statistic, p_value
+
 
 def analisis_tiempos(df):
 	#COINCIDE SIGNIFICA QUE EL TARGET ES IGUAL A LA SUMA DE LOS FLANKERS
