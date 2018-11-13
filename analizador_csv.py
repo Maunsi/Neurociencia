@@ -79,9 +79,19 @@ def analizar(df):
 	print "Control objetivo pares: "
 	t_statistic_pares, p_value_pares = analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, "Control_pares", 0, 1, 'par', 'impar')
 	print "T-test pares: {} p valor: {}".format(t_statistic_pares, p_value_pares)
+	analisis_tiempos(df_menores_a_cuatro)
 
 def filtrar_mayores_a_cuatro(df):
 	sujetos_antes = len(df["Sujeto"].unique())
+	#Agrego un grafico para ver la distribucion de los valores de control subjetivo
+	controles_subjetivos = []
+	for sujeto in df["Sujeto"].unique():
+		control_subjetivo = df.loc[df["Sujeto"] == sujeto, "Control_subjetivo"].iloc[0]
+		print control_subjetivo
+		controles_subjetivos.append(control_subjetivo)
+
+	#Histograma?
+
 	#Filtrar
 	df = df[df.Control_subjetivo < 4]
 	sujetos_despues = len(df["Sujeto"].unique())
