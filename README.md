@@ -1,6 +1,6 @@
-# Neurociencia
+# Neurociencia o una experiencia subliminal
 
-### Nota para correr el experimento
+## Nota para correr el experimento
 
 El programa se ejecuta, desde la consola, de dos formas:
   
@@ -15,3 +15,21 @@ El programa se ejecuta, desde la consola, de dos formas:
   + Para analizar lo contenido en la carpeta Resultados, hacemos ``` python analizador_csv.py ``` desde la consola.
   
   + Deberíamos ver muchos gráficos.
+
+## Notas para agregar cambios a git o actualizar nuestros archivos a la última versión de  git
+
+### Agregar nuestros cambios a git
+
+Desde la terminal, ubicados en la carpeta Neurocienca hacemos:
+  
+  + ``` git add archivos_que_queremos subir ``` o ``` git add . ``` para actualizar todos los archivos.
+    Si queremos subir más de un archivo(pero no todos) basta con hacer ``` git add archivo1 archivo2 ... archivoN ```.
+    
+  + ``` git commit -m "mensaje que explique los cambios" ```, es importante que el mensaje con los cambios tenga comillas. Si       nos abre un editor de texto: escribir ahí el mensaje con los cambios.
+  
+  + ``` git push```, para subir nuestros cambios a git.
+  
+### Actualizar nuestros archivos a la versión de git
+
+Nos basta con hacer ``` git pull ```.
+
