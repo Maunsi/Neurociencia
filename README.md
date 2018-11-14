@@ -1,6 +1,28 @@
 # Neurociencia o una experiencia subliminal
 
-## Nota para correr el experimento
+  [Hoja de ruta](#hoja-de-ruta)
+
+  [Nota para correr el experimento](#nota-para-correr-el-experimento)
+
+  [Agregar cambios o actualizar git](#agregar-cambios-o-actualizar-git)
+
+
+### Hoja de ruta
+
+- [ ] Cambios en el experimento: máscara($$$$$$), consignas, reducir a la mitad en ángulo visual de los flankers(medio metro).
+
+- [ ] Buscar más víctimas.
+
+- [ ] Ir definiendo el paper en paralelo a los puntos anteriores.
+
+- [ ] Analizar los nuevos resultados.
+
+- [ ] Armar presentación definitiva.
+
+- [ ] Dar charla y presentar el paper.
+
+
+### Nota para correr el experimento
 
 El programa se ejecuta, desde la consola, de dos formas:
   
@@ -16,9 +38,9 @@ El programa se ejecuta, desde la consola, de dos formas:
   
   + Deberíamos ver muchos gráficos.
 
-## Notas para agregar cambios a git o actualizar nuestros archivos a la última versión de  git
+### Agregar cambios o actualizar git 
 
-### Agregar nuestros cambios a git
+#### Agregar nuestros cambios a git
 
 Desde la terminal, ubicados en la carpeta Neurocienca hacemos:
   
@@ -29,7 +51,7 @@ Desde la terminal, ubicados en la carpeta Neurocienca hacemos:
   
   + ``` git push```, para subir nuestros cambios a git.
   
-### Actualizar nuestros archivos a la versión de git
+#### Actualizar nuestros archivos a la versión de git
 
 Nos basta con hacer ``` git pull ```.
 
