@@ -73,22 +73,24 @@ def analizar(df):
 	#analisis_control_objetivo_pares(df_menores_a_cuatro)
 	print "Control objetivo operaciones: "
 	funcion_identidad = lambda x:x
-	t_statistic_operaciones, p_value_operaciones = analisis_control_objetivo(df_menores_a_cuatro, "Operacion", funcion_identidad, "Control_operaciones", 'sumar', 'representar', 'sumar', 'representar')
+	t_statistic_operaciones, p_value_operaciones = analisis_control_objetivo(df_menores_a_cuatro, "Operacion", funcion_identidad, 
+		"Control_operaciones", 'sumar', 'representar', 'sumar', 'representar', 'operaciones');
 	print "T-test operaciones: {} p valor: {}".format(t_statistic_operaciones, p_value_operaciones)
 	funcion_par = lambda x: x%2
 	print "Control objetivo pares: "
-	t_statistic_pares, p_value_pares = analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, "Control_pares", 0, 1, 'par', 'impar')
+	t_statistic_pares, p_value_pares = analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, 
+		"Control_pares", 0, 1, 'par', 'impar', 'pares');
 	print "T-test pares: {} p valor: {}".format(t_statistic_pares, p_value_pares)
 	analisis_tiempos(df_menores_a_cuatro)
 
 def filtrar_mayores_a_cuatro(df):
 	sujetos_antes = len(df["Sujeto"].unique())
 	#Agrego un grafico para ver la distribucion de los valores de control subjetivo
-	controles_subjetivos = []
-	for sujeto in df["Sujeto"].unique():
-		control_subjetivo = df.loc[df["Sujeto"] == sujeto, "Control_subjetivo"].iloc[0]
-		print control_subjetivo
-		controles_subjetivos.append(control_subjetivo)
+	#controles_subjetivos = []
+	#for sujeto in df["Sujeto"].unique():
+	#	control_subjetivo = df.loc[df["Sujeto"] == sujeto, "Control_subjetivo"].iloc[0]
+	#	print control_subjetivo
+	#	controles_subjetivos.append(control_subjetivo)
 
 	#Histograma?
 
@@ -97,11 +99,11 @@ def filtrar_mayores_a_cuatro(df):
 	sujetos_despues = len(df["Sujeto"].unique())
 
 	mean = df["Control_subjetivo"].mean()
-	print "Cantidad de sujetxs desechados: {}".format(sujetos_despues-sujetos_antes)
+	print "Cantidad de sujetxs desechados: {}".format(sujetos_antes-sujetos_despues)
 	print "Promedio de visibilidad entre los sujetxs restantes: {}".format(mean)
 	return df
 
-def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_respuesta, senial_estimulo, ruido_estimulo, senial_respuesta, ruido_respuesta):
+def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_respuesta, senial_estimulo, ruido_estimulo, senial_respuesta, ruido_respuesta, titulo):
 	d_primas = []
 	hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales = 0, 0, 0, 0, 0
 	sujetos = df.Sujeto.unique()
@@ -129,8 +131,8 @@ def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_re
 		correct_rejections_totales += correct_rejections
 		nones_totales += nones
 		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
-		draw_bar_plot(5, [hits, misses, falsas_alarmas, correct_rejections, nones], 
-			("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control " + str(sujeto))
+		#draw_bar_plot(5, [hits, misses, falsas_alarmas, correct_rejections, nones], 
+		#	("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control " + str(sujeto))
 	 	#ACA LE HICE LA LOG LINEAR TRANSFORM. SI LO SACO HAY QUE AGREGAR CAST A FLOAT PARA FORZAR LA DIVISION CON COMA
 	 	probabilidad_hit = (hits+0.5)/(hits + misses+1) #hits dividido todos los trials donde el estimulo era senial
 		probabilidad_falsa_alarma = (falsas_alarmas+0.5)/(falsas_alarmas + correct_rejections+1) #falsas alarmas dividido todos los trials que tuvieron estimulo ruido
@@ -141,7 +143,7 @@ def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_re
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
 
 	draw_bar_plot(5, [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales],
-		("Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales", "Nones totales"), "Control")
+		("Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales", "Nones totales"), "Control " + titulo)
 	#Tengo la lista de d's
 	t_statistic, p_value = stats.ttest_1samp(d_primas, 0)
 	return t_statistic, p_value
@@ -192,7 +194,7 @@ def analisis_tiempos(df):
 
 	fig, ax = plt.subplots()
 	index = np.arange(n_groups)
-	bar_width = 0.35
+	bar_width = 0.2
 	opacity = 0.6
 
 	coincide = ax.bar(index, promedios_coincide, bar_width,
@@ -201,7 +203,7 @@ def analisis_tiempos(df):
 	                label='Concide')
 
 	no_coincide = ax.bar(index + bar_width, promedios_no_coincide, bar_width,
-	                alpha=opacity, color='r',
+	                alpha=opacity, color='g',
 	                yerr=desviacion_no_coincide,
 	                label='No coincide')
 
