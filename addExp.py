@@ -12,11 +12,11 @@ import sys
 from trial import Trial
 
 
-def agradecimiento(ventana, nombre_imagen):
+def dibujar_img(ventana, nombre_imagen):
 	imagen = visual.ImageStim(ventana, image=nombre_imagen)
 	imagen.draw()
 	ventana.flip()
-	core.wait(3)
+
 
 def read_input_file(modo_inputs):
 	input_list = []
@@ -43,7 +43,7 @@ def generar_textos_mascaras(ventana):
 	# centro (fixation point en el paper)
 	centro = visual.TextStim(win=ventana, text='| |', units='cm', pos=(0,0))
 	mascara = visual.TextStim(win=ventana, text='MWMWMWMWMWM', units='cm', pos=(0, 0))
-	mascara_post_prime = visual.TextStim(win=ventana, text='$$$$$$$$$$$', units='cm', pos=(0, 0))
+	mascara_post_prime = visual.TextStim(win=ventana, text='###########', units='cm', pos=(0, 0))
 	mascara_flanker_left = visual.TextStim(win=ventana, text='##', units='cm', pos=(-3.929, 0))
 	mascara_flanker_right = visual.TextStim(win=ventana, text='##', units='cm', pos=(3.929, 0))
 
@@ -109,23 +109,16 @@ def rutina_experimentos(modo_inputs):
 	control_subjetivo = 0
 	control_objetivo_operaciones= {}
 	control_objetivo_pares= {}
-	consigna_experimento = visual.TextStim(win=ventana, text=u"Bienvenido al mejor experimento de Neurociencia Cognitiva.\
-								\n\nINSTRUCCIONES:\
-								\nLa tarea consiste en categorizar lo más rápido y preciso que pueda,\
-                                si el símbolo que aparece en el centro de la pantalla es un número o una letra.\
-								\n * Presione L si es una letra \
-								\n * Presione A si es un número.\
-                                \n\nPresione ESPACIO para comenzar.")
 	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
 	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
-	consigna_experimento.draw()
-	ventana.flip()
+	# presentamos la consigna 
+	dibujar_img(ventana, "etapa1_instrucciones.png")
 	key = event.waitKeys(keyList=["space", "escape"])[0]
 	if key == "space":
 		pruebas_y_resultados = experimento(ventana, estimulos, mascaras)
 		control_subjetivo = control.control_subjetivo(ventana)
 		control_objetivo_operaciones, control_objetivo_pares = control.control_objetivo(ventana, estimulos, mascaras)
-		agradecimiento(ventana, "agradecimiento.png")
+		dibujar_img(ventana, "agradecimiento.png")
 		#analizador.escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetivo_operaciones, control_objetivo_pares);
 		analizador_csv.escribir_resultados(pruebas_y_resultados, 
 		control_subjetivo, control_objetivo_operaciones, control_objetivo_pares)
