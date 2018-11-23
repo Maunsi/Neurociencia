@@ -42,10 +42,10 @@ def read_input_file(modo_inputs):
 def generar_textos_mascaras(ventana):
 	# centro (fixation point en el paper)
 	centro = visual.TextStim(win=ventana, text='| |', units='cm', pos=(0,0))
-	mascara = visual.TextStim(win=ventana, text='MWMWMWMWMWM', units='cm', pos=(0, 0))
+	mascara = visual.TextStim(win=ventana, text='&&&&&&&&&&&', units='cm', pos=(0, 0))
 	mascara_post_prime = visual.TextStim(win=ventana, text='###########', units='cm', pos=(0, 0))
-	mascara_flanker_left = visual.TextStim(win=ventana, text='##', units='cm', pos=(-3.929, 0))
-	mascara_flanker_right = visual.TextStim(win=ventana, text='##', units='cm', pos=(3.929, 0))
+	mascara_flanker_left = visual.TextStim(win=ventana, text='##', units='cm', pos=(((-3.929)/2), 0))
+	mascara_flanker_right = visual.TextStim(win=ventana, text='##', units='cm', pos=(((3.929)/2), 0))
 
 	return centro, mascara, mascara_post_prime, mascara_flanker_left, mascara_flanker_right
 
