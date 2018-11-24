@@ -10,8 +10,8 @@ class Trial():
         
     def generate_stimuli(self, win):
         text_prime = visual.TextStim(win=win, name='text_prime', text=self.prime, units='cm', pos=(0, 0))
-        text_left = visual.TextStim(win=win, name='text_left', text=str(self.left), units='cm', pos=(-3.929, 0))
-        text_right = visual.TextStim(win=win, name='text_right', text=str(self.right), units= 'cm', pos=(3.929, 0))
+        text_left = visual.TextStim(win=win, name='text_left', text=str(self.left), units='cm', pos=((-3.929)/2, 0))
+        text_right = visual.TextStim(win=win, name='text_right', text=str(self.right), units= 'cm', pos=((3.929)/2, 0))
         text_res = visual.TextStim(win=win, name='text_res', text=self.res, units= 'cm', pos=(0, 0))
         return text_prime, text_left, text_right, text_res
     

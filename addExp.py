@@ -44,10 +44,12 @@ def generar_textos_mascaras(ventana):
 	centro = visual.TextStim(win=ventana, text='| |', units='cm', pos=(0,0))
 	mascara = visual.TextStim(win=ventana, text='&&&&&&&&&&&', units='cm', pos=(0, 0))
 	mascara_post_prime = visual.TextStim(win=ventana, text='###########', units='cm', pos=(0, 0))
-	mascara_flanker_left = visual.TextStim(win=ventana, text='##', units='cm', pos=(((-3.929)/2), 0))
-	mascara_flanker_right = visual.TextStim(win=ventana, text='##', units='cm', pos=(((3.929)/2), 0))
+	mascara_flanker_left = visual.TextStim(win=ventana, text='&&', units='cm', pos=(((-3.929)/2), 0))
+	mascara_flanker_right = visual.TextStim(win=ventana, text='&&', units='cm', pos=(((3.929)/2), 0))
+	mascara_flanker_left_dos = visual.TextStim(win=ventana, text='##', units='cm', pos=(((-3.929)/2), 0))
+	mascara_flanker_right_dos = visual.TextStim(win=ventana, text='##', units='cm', pos=(((3.929)/2), 0))
 
-	return centro, mascara, mascara_post_prime, mascara_flanker_left, mascara_flanker_right
+	return centro, mascara, mascara_post_prime, mascara_flanker_left, mascara_flanker_right, mascara_flanker_left_dos, mascara_flanker_right_dos
 
 def draw(ventana, estimulos, frames=1):
 	for frame in range(frames):
@@ -59,14 +61,14 @@ def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, masc
 	#Asumo refresh rate de 60hz
 	frames = [61, 5, 2, 5, 6, 2, 72] #Corresponden a tiempo*60frames/segundo
 
-	[centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha] = mascaras
+	[centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha, mascara_izquierda_dos, mascara_derecha_dos] = mascaras
 
 	draw(ventana, {centro}, frames[0])
 
 	# mostrar mascara
 	draw(ventana, {mascara}, frames[1])
 	
-	# mostrar primer de acuerdo a lo especificado en pairAndResInputs.txt
+	# mostrar prime de acuerdo a lo especificado en pairAndResInputs.txt
 	draw(ventana, {text_prime}, frames[2])
 	
 	# mostrar mascara
@@ -75,14 +77,13 @@ def dibujar_estimulos(ventana, text_prime, text_left, text_right, text_res, masc
 	# mostrar mascara para los flankers junto con el centro
 	draw(ventana, {centro, mascara_izquierda, mascara_derecha}, frames[4])
 		
-	#Mostrar pares y el centro
+	# mostrar pares y el centro
 	draw(ventana, {centro, text_left, text_right}, frames[5])
 
-	# mostrar mascara para los flankers y el centro
-	draw(ventana, {centro, mascara_izquierda, mascara_derecha}, frames[6])
+	draw(ventana, {centro, mascara_izquierda_dos, mascara_derecha_dos}, frames[4])
 
 	# Mostrar resultado y mascaras para los flankers
-	draw(ventana, {text_res, mascara_izquierda, mascara_derecha})
+	draw(ventana, {text_res, mascara_izquierda_dos, mascara_derecha_dos})
 
 def experimento(ventana, estimulos, mascaras):
 	clock = core.Clock()
@@ -109,8 +110,8 @@ def rutina_experimentos(modo_inputs):
 	control_subjetivo = 0
 	control_objetivo_operaciones= {}
 	control_objetivo_pares= {}
-	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha = generar_textos_mascaras(ventana)
-	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha]
+	centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha, mascara_izquierda_dos, mascara_derecha_dos = generar_textos_mascaras(ventana)
+	mascaras = [centro, mascara, mascara_post_prime, mascara_izquierda, mascara_derecha, mascara_izquierda_dos, mascara_derecha_dos]
 	# presentamos la consigna 
 	dibujar_img(ventana, "etapa1_instrucciones.png")
 	key = event.waitKeys(keyList=["space", "escape"])[0]
