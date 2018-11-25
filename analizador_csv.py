@@ -9,6 +9,9 @@ import time
 import matplotlib.pyplot as plt
 import random
 import glob
+
+# Por defecto, ahora, levanta los archivos en resultados_nuevos.
+
 def escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetivo_operaciones, control_objetivo_pares):
 	filename = 'resultados' + str(random.randint(1,100000)) + '.csv'
 	with open(filename, mode='w') as csv_file:
@@ -49,7 +52,7 @@ def leer_resultados():
 	sujeto_final = 0
 	df_final = pandas.DataFrame(columns=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta", 
 			"Control_operaciones", "Tiempo_control_operacion", "Control_pares", "Tiempo_control_pares", "Control_subjetivo"])
-	for filepath in glob.iglob('Resultados/*.csv'):
+	for filepath in glob.iglob('resultados_nuevos/*.csv'):
 		df = pandas.read_csv(filepath, names=["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta", 
 			"Control_operaciones", "Tiempo_control_operacion", "Control_pares", "Tiempo_control_pares", "Control_subjetivo"])
 		#consigo los unique, itero para todos los valores para reemplazar los sujetos correctamente
@@ -65,6 +68,7 @@ def leer_resultados():
 		#Esto lo hago porque tuve un error al escribir los archivos!!
 		df["Control_pares"].replace({'par':'par', 'representar':'impar'}, inplace=True)
 		df_final = df_final.append(df, ignore_index=True)
+
 	return df_final
 
 def analizar(df):
@@ -101,6 +105,7 @@ def filtrar_mayores_a_cuatro(df):
 	mean = df["Control_subjetivo"].mean()
 	print "Cantidad de sujetxs desechados: {}".format(sujetos_antes-sujetos_despues)
 	print "Promedio de visibilidad entre los sujetxs restantes: {}".format(mean)
+
 	return df
 
 def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_respuesta, senial_estimulo, ruido_estimulo, senial_respuesta, ruido_respuesta, titulo):
@@ -146,6 +151,7 @@ def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_re
 		("Hits Totales", "Misses Totales", "False Alarms Totales", "Correct Rejections Totales", "Nones totales"), "Control " + titulo)
 	#Tengo la lista de d's
 	t_statistic, p_value = stats.ttest_1samp(d_primas, 0)
+	
 	return t_statistic, p_value
 
 

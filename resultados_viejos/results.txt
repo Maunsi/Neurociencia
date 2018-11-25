@@ -1,0 +1,18 @@
+0 sumar 1,3 4 [('right', 41.86496369930683)] 
+1 sumar 1,1 3 None 
+2 sumar 1,3 A None 
+3 sumar 4,1 A [('right', 37.121012552292086)] 
+4 representar 3,2 1 [('right', 51.249726631096564)] 
+5 representar 3,5 4 [('right', 32.39733714540489)] 
+6 representar 3,5 C [('right', 27.704044198151678)] 
+7 representar 3,2 C [('right', 46.53447959473124)] 
+*
+0 sumar 1,3 4 [('right', 82.94731758668786)] 
+1 sumar 1,1 3 None 
+2 sumar 1,3 A [('left', 92.55028552701697)] 
+3 sumar 4,1 A None 
+4 representar 3,2 1 [('right', 97.28340575343464)] 
+5 representar 3,5 4 [('right', 101.97192229679786)] 
+6 representar 3,5 C [('left', 120.35739281598944)] 
+7 representar 3,2 C [('left', 87.83656958292704)] 
+*
