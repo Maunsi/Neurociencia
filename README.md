@@ -32,9 +32,9 @@ El programa se ejecuta, desde la consola, de dos formas:
   
   + Si queremos nuevos trials para la prueba tenemos que correr el generador de pares haciendo ``` python generadoresDePares.py     cantidad_de_pares_a_generar ``` donde cantidad_de_pares_a_generar >= 0.
   
-  + Finalizado el experimento, si queremos analizar los resultados del mismo, tenemos que mover el archivo de resultados a la       carpeta Resultados.
+  + Finalizado el experimento, si queremos analizar los resultados del mismo, tenemos que mover el archivo de resultados a la       carpeta resultados_nuevos.
   
-  + Para analizar lo contenido en la carpeta Resultados, hacemos ``` python analizador_csv.py ``` desde la consola.
+  + Para analizar lo contenido en la carpeta resultados_nuevos, hacemos ``` python analizador_csv.py ``` desde la consola.
   
   + Deberíamos ver muchos gráficos.
 
@@ -44,7 +44,7 @@ El programa se ejecuta, desde la consola, de dos formas:
 
 Desde la terminal, ubicados en la carpeta Neurocienca hacemos:
   
-  + ``` git add archivos_que_queremos subir ``` o ``` git add . ``` para actualizar todos los archivos.
+  + ``` git add archivo_que_queremos subir ``` o ``` git add . ``` para actualizar todos los archivos.
     Si queremos subir más de un archivo(pero no todos) basta con hacer ``` git add archivo1 archivo2 ... archivoN ```.
     
   + ``` git commit -m "mensaje que explique los cambios" ```, es importante que el mensaje con los cambios tenga comillas. Si       nos abre un editor de texto: escribir ahí el mensaje con los cambios.
