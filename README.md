@@ -9,7 +9,7 @@
 
 ### Hoja de ruta
 
-- [ ] Cambios en el experimento: máscaras(#####) o (******) ir probando; También probar con un solo numeral o un asteríso y un numeral, para ver si así se ven menos los números, reducir a la mitad en ángulo visual de los flankers(medio metro).
+- [x] Cambios en el experimento: máscaras(#####) o (******) ir probando; También probar con un solo numeral o un asteríso y un numeral, para ver si así se ven menos los números, reducir a la mitad en ángulo visual de los flankers(medio metro).
 
 - [ ] Buscar más víctimas.
 
