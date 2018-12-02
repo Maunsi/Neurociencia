@@ -76,13 +76,11 @@ def analizar(df):
 	#analisis_control_objetivo_operacion(df_menores_a_cuatro)
 	#analisis_control_objetivo_pares(df_menores_a_cuatro)
 	print "Control objetivo operaciones: "
-	funcion_identidad = lambda x:x
-	t_statistic_operaciones, p_value_operaciones = analisis_control_objetivo(df_menores_a_cuatro, "Operacion", funcion_identidad, 
+	t_statistic_operaciones, p_value_operaciones = analisis_control_objetivo(df_menores_a_cuatro, "Operacion", lambda x:x, 
 		"Control_operaciones", 'sumar', 'representar', 'sumar', 'representar', 'operaciones');
 	print "T-test operaciones: {} p valor: {}".format(t_statistic_operaciones, p_value_operaciones)
-	funcion_par = lambda x: x%2
 	print "Control objetivo pares: "
-	t_statistic_pares, p_value_pares = analisis_control_objetivo(df, "Flanker_izquierdo", funcion_par, 
+	t_statistic_pares, p_value_pares = analisis_control_objetivo(df, "Flanker_izquierdo", lambda x: x%2, 
 		"Control_pares", 0, 1, 'par', 'impar', 'pares');
 	print "T-test pares: {} p valor: {}".format(t_statistic_pares, p_value_pares)
 	analisis_tiempos(df_menores_a_cuatro)
@@ -138,13 +136,13 @@ def analisis_control_objetivo(df, columna_estimulo, funcion_estimulo, columna_re
 		print "Sujeto: {}, Hits: {}, Misses: {}, Falsas alarmas: {}, Correct Rejections: {}, Nones: {}".format(sujeto, hits, misses, falsas_alarmas, correct_rejections, nones)
 		#draw_bar_plot(5, [hits, misses, falsas_alarmas, correct_rejections, nones], 
 		#	("Hits", "Misses", "False Alarms", "Correct Rejections", "Nones"), "Control " + str(sujeto))
-	 	#ACA LE HICE LA LOG LINEAR TRANSFORM. SI LO SACO HAY QUE AGREGAR CAST A FLOAT PARA FORZAR LA DIVISION CON COMA
-	 	probabilidad_hit = (hits+0.5)/(hits + misses+1) #hits dividido todos los trials donde el estimulo era senial
+		#ACA LE HICE LA LOG LINEAR TRANSFORM. SI LO SACO HAY QUE AGREGAR CAST A FLOAT PARA FORZAR LA DIVISION CON COMA
+		probabilidad_hit = (hits+0.5)/(hits + misses+1) #hits dividido todos los trials donde el estimulo era senial
 		probabilidad_falsa_alarma = (falsas_alarmas+0.5)/(falsas_alarmas + correct_rejections+1) #falsas alarmas dividido todos los trials que tuvieron estimulo ruido
 		print "Probabilidad hit {}".format(probabilidad_hit)
 		print "Probabilidad falsa alarma {}".format(probabilidad_falsa_alarma)
 		d_prima = stats.norm.ppf(probabilidad_hit) - stats.norm.ppf(probabilidad_falsa_alarma)
-	 	d_primas.append(d_prima)
+		d_primas.append(d_prima)
 	print "Hits totales: {}, Misses totales: {}, Falsas alarmas totales: {}, Correct Rejections totales: {}, Nones totales: {}".format(hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales)
 
 	draw_bar_plot(5, [hits_totales, misses_totales, falsas_alarmas_totales, correct_rejections_totales, nones_totales],
@@ -160,18 +158,29 @@ def analisis_tiempos(df):
 	#Por si queremos pasarlo a milisegundos
 	#df["Tiempo_de_respuesta"] = df["Tiempo_de_respuesta"]*1000
 
-	df_numero = df.loc[df["Target"].isin(["1","2","3","4","5","6"]) & (df["Tiempo_de_respuesta"] > 0.3) & (df["Tiempo_de_respuesta"] < 1)]
+	df= df.loc[df["Target"].isin(["1","2","3","4","5","6"]) & (df["Tiempo_de_respuesta"] > 0.3) & (df["Tiempo_de_respuesta"] < 1) & (df["Respuesta"]=='numero')]
 	#Que pasa si multiplico la de tiempo de respuesta por 1000
-	df_numero["Target"] = pandas.to_numeric(df_numero["Target"], errors='ignore')
+	df["Target"] = pandas.to_numeric(df["Target"], errors='ignore')
 
-	df_numero_coincide = df_numero.loc[df_numero["Target"] == (df_numero["Flanker_izquierdo"] + df_numero["Flanker_derecho"])]
+	df_numero_coincide = df.loc[df["Target"] == (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
 	df_numero_coincide_suma = df_numero_coincide.loc[df["Operacion"] == 'sumar']
 	df_numero_coincide_representar = df_numero_coincide.loc[df["Operacion"] == 'representar']
 
-	df_numero_no_coincide = df_numero.loc[df["Target"] != (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
+	df_numero_no_coincide = df.loc[df["Target"] != (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
 	df_numero_no_coincide_suma = df_numero_no_coincide.loc[df["Operacion"] == 'sumar']
 	df_numero_no_coincide_representar = df_numero_no_coincide.loc[df["Operacion"] == 'representar']
+	print("Df con target numero y tiempo de respuesta correcto")
+	print("Df numero coincide suma")
+	print("Df numero coincide representar")
+	print("Df numero no coincide suma")
+	print("Df numero no coincide representar")
 
+	with pandas.option_context('display.max_rows', None, 'display.max_columns', 12):
+		print(df)
+		print(df_numero_coincide_suma)
+		print(df_numero_coincide_representar)
+		print(df_numero_no_coincide_suma)
+		print(df_numero_no_coincide_representar)
 	promedio_suma_coincide = df_numero_coincide_suma["Tiempo_de_respuesta"].mean()
 	desviacion_suma_coincide = df_numero_coincide_suma["Tiempo_de_respuesta"].std()
 	
@@ -204,14 +213,14 @@ def analisis_tiempos(df):
 	opacity = 0.6
 
 	coincide = ax.bar(index, promedios_coincide, bar_width,
-	                alpha=opacity, color='b',
-	                yerr=desviacion_coincide,
-	                label='Concide')
+					alpha=opacity, color='b',
+					yerr=desviacion_coincide,
+					label='Concide')
 
 	no_coincide = ax.bar(index + bar_width, promedios_no_coincide, bar_width,
-	                alpha=opacity, color='g',
-	                yerr=desviacion_no_coincide,
-	                label='No coincide')
+					alpha=opacity, color='g',
+					yerr=desviacion_no_coincide,
+					label='No coincide')
 
 	ax.set_xlabel('Operacion')
 	ax.set_ylabel('Tiempos de respuesta')
