@@ -4,12 +4,17 @@ import csv
 import pandas
 from trial import Trial
 from scipy import stats
+import math
 import numpy as np
 import time
 import matplotlib.pyplot as plt
 import random
 import glob
-
+import statsmodels.formula.api as smf
+from statsmodels.stats.anova import anova_lm
+import statsmodels.api as sm
+# Shapiro-Wilk Test
+from scipy.stats import shapiro
 # Por defecto, ahora, levanta los archivos en resultados_nuevos.
 
 def escribir_resultados(pruebas_y_resultados, control_subjetivo, control_objetivo_operaciones, control_objetivo_pares):
@@ -158,46 +163,57 @@ def analisis_tiempos(df):
 	#Por si queremos pasarlo a milisegundos
 	#df["Tiempo_de_respuesta"] = df["Tiempo_de_respuesta"]*1000
 
-	df= df.loc[df["Target"].isin(["1","2","3","4","5","6"]) & (df["Tiempo_de_respuesta"] > 0.3) & (df["Tiempo_de_respuesta"] < 1) & (df["Respuesta"]=='numero')]
+	df = df.loc[df["Target"].isin(["1","2","3","4","5","6"]) & (df["Tiempo_de_respuesta"] > 0.3) & (df["Tiempo_de_respuesta"] < 1) & (df["Respuesta"]=='numero')]
 	#Que pasa si multiplico la de tiempo de respuesta por 1000
+	#df.update(df.loc[:, "Target"].apply(pandas.to_numeric, errors='coerce'))
 	df["Target"] = pandas.to_numeric(df["Target"], errors='ignore')
+	shapiro_test()
+	#df.update(df.loc[:, "Tiempo_de_respuesta"].apply(np.log10))
+	df["Tiempo_de_respuesta"] = np.log10(df["Tiempo_de_respuesta"])
+	#Nos quedamos con las columnas que nos importan
+	df = df[["Sujeto", "Operacion", "Flanker_izquierdo", "Flanker_derecho", "Target", "Respuesta", "Tiempo_de_respuesta"]]
+	df.loc[df["Target"] == (df["Flanker_izquierdo"] + df["Flanker_derecho"]), "Coincide"] = True
+	df_coincide_suma = df.loc[(df["Operacion"] == 'sumar') & (df["Coincide"] == True)]
+	df_coincide_representar = df.loc[(df["Operacion"] == 'representar') & (df["Coincide"] == True)]
+	#df_coincide_representar = df_numero_coincide.loc[df["Operacion"] == 'representar']
 
-	df_numero_coincide = df.loc[df["Target"] == (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
-	df_numero_coincide_suma = df_numero_coincide.loc[df["Operacion"] == 'sumar']
-	df_numero_coincide_representar = df_numero_coincide.loc[df["Operacion"] == 'representar']
 
-	df_numero_no_coincide = df.loc[df["Target"] != (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
-	df_numero_no_coincide_suma = df_numero_no_coincide.loc[df["Operacion"] == 'sumar']
-	df_numero_no_coincide_representar = df_numero_no_coincide.loc[df["Operacion"] == 'representar']
-	print("Df con target numero y tiempo de respuesta correcto")
-	print("Df numero coincide suma")
-	print("Df numero coincide representar")
-	print("Df numero no coincide suma")
-	print("Df numero no coincide representar")
+	#df_numero_coincide = df.loc[df["Target"] == (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
+	#df_coincide_suma = df_numero_coincide.loc[df["Operacion"] == 'sumar']
+	#df_coincide_representar = df_numero_coincide.loc[df["Operacion"] == 'representar']
 
-	with pandas.option_context('display.max_rows', None, 'display.max_columns', 12):
-		print(df)
-		print(df_numero_coincide_suma)
-		print(df_numero_coincide_representar)
-		print(df_numero_no_coincide_suma)
-		print(df_numero_no_coincide_representar)
-	promedio_suma_coincide = df_numero_coincide_suma["Tiempo_de_respuesta"].mean()
-	desviacion_suma_coincide = df_numero_coincide_suma["Tiempo_de_respuesta"].std()
+
+	df.loc[df["Target"] != (df["Flanker_izquierdo"] + df["Flanker_derecho"]), "Coincide"] = False
+	df_no_coincide_suma = df.loc[(df["Operacion"] == 'sumar') & (df["Coincide"] == False)]
+	df_no_coincide_representar = df.loc[(df["Operacion"] == 'representar') & (df["Coincide"] == False)]
+	#df_numero_no_coincide = df.loc[df["Target"] != (df["Flanker_izquierdo"] + df["Flanker_derecho"])]
+	#df_no_coincide_suma = df_numero_no_coincide.loc[df["Operacion"] == 'sumar']
+	#df_no_coincide_representar = df_numero_no_coincide.loc[df["Operacion"] == 'representar']
+	# print("Df con target numero y tiempo de respuesta correcto")
+	# print("Df numero coincide suma")
+	# print("Df numero coincide representar")
+	# print("Df numero no coincide suma")
+	# print("Df numero no coincide representar")
+	# pandas.set_option('display.width', 1000)
+	# with pandas.option_context('display.max_rows', None, 'display.max_columns', 12):
+	# 	print(df.shape)
+	# 	print(df)
+	# 	print(df_coincide_suma)
+	# 	print(df_coincide_representar)
+	# 	print(df_no_coincide_suma)
+	# 	print(df_no_coincide_representar)
+
+	promedio_suma_coincide = df_coincide_suma["Tiempo_de_respuesta"].mean()
+	desviacion_suma_coincide = df_coincide_suma["Tiempo_de_respuesta"].std()
 	
-	promedio_representar_coincide = df_numero_coincide_representar["Tiempo_de_respuesta"].mean()
-	desviacion_representar_coincide = df_numero_coincide_representar["Tiempo_de_respuesta"].std()
+	promedio_representar_coincide = df_coincide_representar["Tiempo_de_respuesta"].mean()
+	desviacion_representar_coincide = df_coincide_representar["Tiempo_de_respuesta"].std()
 
-	promedio_suma_no_coincide = df_numero_no_coincide_suma["Tiempo_de_respuesta"].mean()
-	desviacion_suma_no_coincide = df_numero_no_coincide_suma["Tiempo_de_respuesta"].std()
+	promedio_suma_no_coincide = df_no_coincide_suma["Tiempo_de_respuesta"].mean()
+	desviacion_suma_no_coincide = df_no_coincide_suma["Tiempo_de_respuesta"].std()
 
-	promedio_representar_no_coincide = df_numero_no_coincide_representar["Tiempo_de_respuesta"].mean()
-	desviacion_representar_no_coincide = df_numero_no_coincide_representar["Tiempo_de_respuesta"].std()
-	
-	promedios = (promedio_suma_coincide, promedio_suma_no_coincide, promedio_representar_coincide, promedio_representar_no_coincide)
-	desviaciones = (desviacion_suma_coincide, desviacion_suma_no_coincide, desviacion_representar_coincide, desviacion_representar_no_coincide)
-	etiquetas = ("SumarC", "SumarN", "RepresentaC", "RepresentarN")
-	titulo = "Resultados tiempo"
-	draw_bar_plot(4, promedios, etiquetas, titulo, desviaciones)
+	promedio_representar_no_coincide = df_no_coincide_representar["Tiempo_de_respuesta"].mean()
+	desviacion_representar_no_coincide = df_no_coincide_representar["Tiempo_de_respuesta"].std()
 
 	n_groups = 2
 
@@ -232,12 +248,35 @@ def analisis_tiempos(df):
 	fig.tight_layout()
 	plt.show()
 
+	#df.plot(x="Tiempo_de_respuesta", y=, kind="hist")
+	df.hist(column="Tiempo_de_respuesta")
+	plt.show()
+
+	shapiro_test()
+
+	print "Statsmodel.Formula.Api Method"
+
+	model = smf.ols(formula='Tiempo_de_respuesta ~ Operacion + Coincide + Operacion:Coincide', data=df).fit()
+	anova = anova_lm(model, typ=2)
+	print model.params
+	print(model.summary())
+	print anova
 
 def draw_bar_plot(n, variables, etiquetas, titulo, desviaciones=None):
 	plt.bar(np.arange(n), variables, yerr=desviaciones)
 	plt.xticks(np.arange(n), etiquetas)
 	plt.title(titulo)
 	plt.show()
+
+def shapiro_test():
+	stat, p = shapiro(df["Tiempo_de_respuesta"])
+	print('Statistics=%.3f, p=%.3f' % (stat, p))
+	# interpret
+	alpha = 0.05
+	if p > alpha:
+		print('Sample looks Gaussian (fail to reject H0)')
+	else:
+		print('Sample does not look Gaussian (reject H0)')
 
 if __name__ == '__main__':
 	df = leer_resultados()
